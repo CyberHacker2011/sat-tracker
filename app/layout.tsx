@@ -20,6 +20,14 @@ export const metadata: Metadata = {
   description: "Plan your daily SAT study sessions, track progress, and build consistent study habits. Increase SAT productivity with smart planning, daily check-ins, and progress tracking for Math, Reading, and Writing sections.",
   manifest: "/manifest.json",
   themeColor: "#d97706",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: [
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -97,6 +105,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#d97706" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
