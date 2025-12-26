@@ -1,11 +1,19 @@
 {
-  "name": "SAT Tracker MVP",
+  "name": "SAT Tracker - Boost Your SAT Study Productivity",
   "short_name": "SAT Tracker",
+  "description": "Plan your daily SAT study sessions, track progress, and build consistent study habits. Increase your SAT preparation productivity with smart planning and daily check-ins.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
-  "description": "Daily SAT planning and check-in tracker."
+  "background_color": "#ffffff",
+  "theme_color": "#d97706",
+  "orientation": "portrait-primary",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
 }
-
-
