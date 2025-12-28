@@ -85,9 +85,9 @@ function isPastEndTime(dateString: string, endTime: string) {
   return now > endDateTime;
 }
 
-function canCheckIn(dateString: string, startTime: string, endTime: string) {
-  // Can only check in after start time has passed and before end time has passed
-  return isPastStartTime(dateString, startTime) && !isPastEndTime(dateString, endTime);
+function canCheckIn(dateString: string, startTime: string) {
+  // Can only check in after start time has passed
+  return isPastStartTime(dateString, startTime);
 }
 
 function formatTime(time: string) {
@@ -183,14 +183,8 @@ export default function CheckInPage() {
   }, [supabase]);
 
   async function handleCheckIn(plan: StudyPlan, status: Status) {
-    if (!canCheckIn(plan.date, plan.start_time, plan.end_time)) {
-      if (!isPastStartTime(plan.date, plan.start_time)) {
-        setError("Check-in is only allowed after the plan start time.");
-      } else if (isPastEndTime(plan.date, plan.end_time)) {
-        setError("Check-in is only allowed before the plan end time.");
-      } else {
-        setError("Check-in is not available at this time.");
-      }
+    if (!canCheckIn(plan.date, plan.start_time)) {
+      setError("Check-in is only allowed after the plan start time.");
       return;
     }
 
@@ -325,8 +319,7 @@ export default function CheckInPage() {
                     {plansByDate[date].map((plan) => {
                       const log = logsByPlanId[plan.id];
                       const startTimePassed = isPastStartTime(plan.date, plan.start_time);
-                      const endTimePassed = isPastEndTime(plan.date, plan.end_time);
-                      const disabled = !startTimePassed || endTimePassed;
+                      const disabled = !startTimePassed;
                       const currentStatus = log ? log.status : null;
 
                       return (
@@ -360,7 +353,7 @@ export default function CheckInPage() {
                               </button>
                               {disabled && (
                                 <span className="text-xs text-gray-500">
-                                  {!startTimePassed ? "Not started" : "Closed"}
+                                  Not started
                                 </span>
                               )}
                             </div>
@@ -407,7 +400,7 @@ export default function CheckInPage() {
           <li>Click &quot;Done&quot; if you completed the study plan</li>
           <li>Click &quot;Missed&quot; if you were unable to complete it</li>
           <li>Plans are grouped by date and ordered by start time</li>
-          <li>You can only check in after the plan&apos;s start time and before the end time</li>
+          <li>You can check in after the plan&apos;s start time (even after the end time)</li>
           <li>If you do nothing, plans remain unmarked</li>
         </ul>
       </div>

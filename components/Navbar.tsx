@@ -8,6 +8,7 @@ import Link from "next/link";
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
   const router = useRouter();
   const pathname = usePathname();
   const supabase = getSupabaseBrowserClient();
@@ -32,6 +33,71 @@ export function Navbar() {
       subscription.unsubscribe();
     };
   }, [supabase]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setNotificationCount(0);
+      return;
+    }
+
+    async function fetchNotificationCount() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      const { count, error } = await supabase
+        .from("notifications")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .is("dismissed_at", null);
+
+      if (!error && count !== null) {
+        setNotificationCount(count);
+      }
+    }
+
+    fetchNotificationCount();
+
+    // Set up real-time subscription for notification count
+    let channel: any = null;
+    async function setupSubscription() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      channel = supabase
+        .channel(`notification-count:${user.id}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "notifications",
+            filter: `user_id=eq.${user.id}`,
+          },
+          () => {
+            fetchNotificationCount();
+          }
+        )
+        .subscribe();
+    }
+
+    setupSubscription();
+
+    // Poll for updates every 30 seconds as fallback
+    const intervalId = setInterval(fetchNotificationCount, 30000);
+
+    return () => {
+      if (channel) {
+        channel.unsubscribe();
+      }
+      clearInterval(intervalId);
+    };
+  }, [supabase, isAuthenticated]);
 
   async function handleSignOut() {
     await supabase.auth.signOut();
@@ -76,6 +142,32 @@ export function Navbar() {
               </Link>
             );
           })}
+          {isAuthenticated && (
+            <Link
+              href="/notifications"
+              className="relative text-gray-900 hover:text-amber-600 transition-colors"
+              aria-label="Notifications"
+            >
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
+                />
+              </svg>
+              {notificationCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs font-semibold text-white">
+                  {notificationCount > 9 ? "9+" : notificationCount}
+                </span>
+              )}
+            </Link>
+          )}
           {isAuthenticated ? (
             <button
               onClick={handleSignOut}
@@ -155,6 +247,37 @@ export function Navbar() {
                       </Link>
                     );
                   })}
+                  {isAuthenticated && (
+                    <Link
+                      href="/notifications"
+                      onClick={() => setIsOpen(false)}
+                      className={`-mx-3 flex items-center gap-2 rounded-lg px-3 py-2 text-base font-semibold leading-7 ${
+                        pathname === "/notifications"
+                          ? "bg-amber-50 text-amber-600"
+                          : "text-gray-900 hover:bg-gray-50"
+                      }`}
+                    >
+                      <svg
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
+                        />
+                      </svg>
+                      Notifications
+                      {notificationCount > 0 && (
+                        <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs font-semibold text-white">
+                          {notificationCount > 9 ? "9+" : notificationCount}
+                        </span>
+                      )}
+                    </Link>
+                  )}
                 </div>
                 <div className="py-6">
                   {isAuthenticated ? (

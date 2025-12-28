@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { PWAControls } from "@/components/PWAControls";
-import { NotificationTriggers } from "@/components/NotificationTriggers";
+import { UserActivityTracker } from "@/components/UserActivityTracker";
+import { NotificationPopups } from "@/components/NotificationPopups";
 import { Navbar } from "@/components/Navbar";
 
 const geistSans = Geist({
@@ -18,7 +18,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "SAT Tracker - Boost Your SAT Study Productivity | Daily Study Planner",
   description: "Plan your daily SAT study sessions, track progress, and build consistent study habits. Increase SAT productivity with smart planning, daily check-ins, and progress tracking for Math, Reading, and Writing sections.",
-  manifest: "/manifest.json",
   themeColor: "#d97706",
   icons: {
     icon: [
@@ -105,11 +104,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#d97706" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="SAT Tracker" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900`}
@@ -118,8 +113,8 @@ export default function RootLayout({
         <main className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-white to-amber-50">
           {children}
         </main>
-        <PWAControls />
-        <NotificationTriggers />
+        <UserActivityTracker />
+        <NotificationPopups />
       </body>
     </html>
   );
