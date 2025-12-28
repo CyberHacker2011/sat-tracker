@@ -2,6 +2,7 @@
 
 import { FormEvent, Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 
 type Mode = "sign-in" | "sign-up";
@@ -41,8 +42,8 @@ function LoginContent() {
 
       router.push(redirectTo);
       router.refresh();
-    } catch (err: any) {
-      setError(err.message ?? "Authentication failed");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Authentication failed");
     } finally {
       setLoading(false);
     }
@@ -146,9 +147,9 @@ function LoginContent() {
         </div>
 
         <div className="mt-6 text-center text-sm text-gray-600">
-          <a href="/" className="font-semibold text-gray-900 hover:text-gray-700">
+          <Link href="/" className="font-semibold text-gray-900 hover:text-gray-700">
             ← Back to home
-          </a>
+          </Link>
         </div>
       </div>
     </div>

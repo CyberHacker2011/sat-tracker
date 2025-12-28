@@ -36,16 +36,21 @@ export function Navbar() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      setNotificationCount(0);
       return;
     }
+
+    type RealtimeChannel = ReturnType<typeof supabase.channel>;
+    let channel: RealtimeChannel | null = null;
 
     async function fetchNotificationCount() {
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) return;
+      if (!user) {
+        setNotificationCount(0);
+        return;
+      }
 
       const { count, error } = await supabase
         .from("notifications")
@@ -55,13 +60,11 @@ export function Navbar() {
 
       if (!error && count !== null) {
         setNotificationCount(count);
+      } else {
+        setNotificationCount(0);
       }
     }
 
-    fetchNotificationCount();
-
-    // Set up real-time subscription for notification count
-    let channel: any = null;
     async function setupSubscription() {
       const {
         data: { user },
@@ -86,6 +89,7 @@ export function Navbar() {
         .subscribe();
     }
 
+    fetchNotificationCount();
     setupSubscription();
 
     // Poll for updates every 30 seconds as fallback

@@ -21,14 +21,6 @@ type DailyLog = {
   status: Status;
 };
 
-function getTodayDateString() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
 function getNext7Days() {
   const days = [];
   const today = new Date();
@@ -71,18 +63,6 @@ function isPastStartTime(dateString: string, startTime: string) {
 
   const now = new Date();
   return now >= startDateTime;
-}
-
-function isPastEndTime(dateString: string, endTime: string) {
-  const [eh, em] = endTime.split(":").map(Number);
-  if (Number.isNaN(eh) || Number.isNaN(em)) return false;
-
-  const planDate = new Date(dateString + "T00:00:00");
-  const endDateTime = new Date(planDate);
-  endDateTime.setHours(eh, em, 0, 0);
-
-  const now = new Date();
-  return now > endDateTime;
 }
 
 function canCheckIn(dateString: string, startTime: string) {
@@ -172,8 +152,8 @@ export default function CheckInPage() {
           byPlan[log.plan_id] = log as DailyLog;
         });
         setLogsByPlanId(byPlan);
-      } catch (err: any) {
-        setError(err.message ?? "Failed to load plans.");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load plans.");
       } finally {
         setLoading(false);
       }
@@ -245,8 +225,8 @@ export default function CheckInPage() {
           [plan.id]: data as DailyLog,
         }));
       }
-    } catch (err: any) {
-      setError(err.message ?? "Failed to save check-in.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save check-in.");
     } finally {
       setSavingPlanId(null);
     }

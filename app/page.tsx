@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <div className="w-full bg-gradient-to-b from-white to-amber-50">
@@ -161,18 +163,18 @@ export default function Home() {
             Start planning your study sessions today and build the consistency you need to excel on the SAT.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <a
+            <Link
               href="/login"
               className="rounded-lg bg-white px-8 py-3 text-base font-semibold text-amber-600 shadow-sm hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               Sign Up Free
-            </a>
-            <a
+            </Link>
+            <Link
               href="/plan"
               className="rounded-lg bg-amber-500 px-8 py-3 text-base font-semibold text-white shadow-sm hover:bg-amber-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300"
             >
               View Plans
-            </a>
+            </Link>
           </div>
         </div>
       </section>

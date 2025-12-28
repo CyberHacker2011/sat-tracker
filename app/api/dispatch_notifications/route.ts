@@ -286,11 +286,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       processed: usersProcessed,
-      notifications_created,
+      notificationsCreated,
       emails_sent: emailsSent,
     });
-  } catch (error: any) {
-    errorMessage = error.message || "Internal server error";
+  } catch (error) {
+    errorMessage = error instanceof Error ? error.message : "Internal server error";
 
     // Log failed run
     try {

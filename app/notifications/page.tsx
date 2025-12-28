@@ -42,8 +42,8 @@ export default function NotificationsPage() {
         }
 
         setNotifications((data as Notification[]) || []);
-      } catch (err: any) {
-        setError(err.message ?? "Failed to load notifications.");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load notifications.");
       } finally {
         setLoading(false);
       }

@@ -111,8 +111,8 @@ export default function ArchivePage() {
           byPlan[log.plan_id] = log as DailyLog;
         });
         setLogsByPlanId(byPlan);
-      } catch (err: any) {
-        setError(err.message ?? "Failed to load archive.");
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load archive.");
       } finally {
         setLoading(false);
       }

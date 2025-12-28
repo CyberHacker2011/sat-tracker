@@ -18,7 +18,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "SAT Tracker - Boost Your SAT Study Productivity | Daily Study Planner",
   description: "Plan your daily SAT study sessions, track progress, and build consistent study habits. Increase SAT productivity with smart planning, daily check-ins, and progress tracking for Math, Reading, and Writing sections.",
-  themeColor: "#d97706",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },

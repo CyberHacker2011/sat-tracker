@@ -16,8 +16,35 @@ export function NotificationPopups() {
   const [visibleNotifications, setVisibleNotifications] = useState<Notification[]>([]);
   const playedSoundsRef = useRef<Set<string>>(new Set());
 
+  function playNotificationSound() {
+    try {
+      const AudioContextClass = window.AudioContext || (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!AudioContextClass) return;
+      
+      const audioContext = new AudioContextClass();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.value = 800;
+      oscillator.type = "sine";
+
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (error) {
+      // Fallback: silent if audio context fails
+      console.error("Error playing notification sound:", error);
+    }
+  }
+
   useEffect(() => {
-    let channel: any = null;
+    type RealtimeChannel = ReturnType<typeof supabase.channel>;
+    let channel: RealtimeChannel | null = null;
     let intervalId: NodeJS.Timeout | null = null;
     let cancelled = false;
 
@@ -112,29 +139,6 @@ export function NotificationPopups() {
       }
     };
   }, [supabase]);
-
-  function playNotificationSound() {
-    try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      oscillator.frequency.value = 800;
-      oscillator.type = "sine";
-
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.3);
-    } catch (error) {
-      // Fallback: silent if audio context fails
-      console.error("Error playing notification sound:", error);
-    }
-  }
 
   async function handleDismiss(notificationId: string) {
     const {

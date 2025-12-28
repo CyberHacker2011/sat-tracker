@@ -106,15 +106,14 @@ export default function PlanPage() {
       setTasksText("");
       setStartTime("");
       setEndTime("");
-    } catch (err: any) {
-      setError(err.message ?? "Failed to save plan.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save plan.");
     } finally {
       setSubmitting(false);
     }
   }
 
   const availableDates = getNext7Days();
-  const today = getTodayDateString();
 
   return (
     <div className="mx-auto max-w-4xl p-3 md:p-6">
@@ -242,7 +241,7 @@ export default function PlanPage() {
               required
             />
             <p className="mt-2 text-sm text-gray-500">
-              Be specific about what you'll study to stay focused and track your progress effectively.
+              Be specific about what you&apos;ll study to stay focused and track your progress effectively.
             </p>
           </div>
 
