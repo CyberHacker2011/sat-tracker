@@ -41,7 +41,7 @@ function formatDateForDisplay(dateString: string) {
   today.setHours(0, 0, 0, 0);
   const dateOnly = new Date(date);
   dateOnly.setHours(0, 0, 0, 0);
-  
+
   const diffTime = dateOnly.getTime() - today.getTime();
   const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
@@ -85,6 +85,16 @@ export default function CheckInPage() {
   const [loading, setLoading] = useState(true);
   const [savingPlanId, setSavingPlanId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Update current time every minute for real-time start time checks
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every minute
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     async function loadData() {
@@ -311,11 +321,10 @@ export default function CheckInPage() {
                                 type="button"
                                 disabled={disabled || savingPlanId === plan.id}
                                 onClick={() => handleCheckIn(plan, "done")}
-                                className={`inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
-                                  currentStatus === "done"
+                                className={`inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${currentStatus === "done"
                                     ? "bg-green-600 text-white"
                                     : "bg-green-50 text-green-700 hover:bg-green-100"
-                                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                                  } disabled:opacity-50 disabled:cursor-not-allowed`}
                               >
                                 {savingPlanId === plan.id && currentStatus !== "done" ? "Saving..." : "Done"}
                               </button>
@@ -323,11 +332,10 @@ export default function CheckInPage() {
                                 type="button"
                                 disabled={disabled || savingPlanId === plan.id}
                                 onClick={() => handleCheckIn(plan, "missed")}
-                                className={`inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
-                                  currentStatus === "missed"
+                                className={`inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${currentStatus === "missed"
                                     ? "bg-red-600 text-white"
                                     : "bg-red-50 text-red-700 hover:bg-red-100"
-                                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                                  } disabled:opacity-50 disabled:cursor-not-allowed`}
                               >
                                 {savingPlanId === plan.id && currentStatus !== "missed" ? "Saving..." : "Missed"}
                               </button>

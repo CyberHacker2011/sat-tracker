@@ -20,7 +20,7 @@ export function NotificationPopups() {
     try {
       const AudioContextClass = window.AudioContext || (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (!AudioContextClass) return;
-      
+
       const audioContext = new AudioContextClass();
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
@@ -71,8 +71,7 @@ export function NotificationPopups() {
 
       if (data && !cancelled) {
         setNotifications(data as Notification[]);
-        setVisibleNotifications(data as Notification[]);
-        
+
         // Play sound for new notifications
         data.forEach((notif) => {
           if (!playedSoundsRef.current.has(notif.id)) {
@@ -128,7 +127,7 @@ export function NotificationPopups() {
     }
 
     setupSubscription();
-    
+
     return () => {
       cancelled = true;
       if (channel) {
@@ -169,15 +168,43 @@ export function NotificationPopups() {
     );
   }
 
-  // Limit visible notifications based on screen height
+  async function handleDismissAll() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    const notificationIds = visibleNotifications.map((n) => n.id);
+
+    const { error } = await supabase
+      .from("notifications")
+      .update({ dismissed_at: new Date().toISOString() })
+      .in("id", notificationIds)
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error dismissing all notifications:", error);
+      return;
+    }
+
+    // Clear all visible notifications
+    setVisibleNotifications([]);
+    setNotifications((prev) =>
+      prev.map((n) =>
+        notificationIds.includes(n.id) ? { ...n, dismissed_at: new Date().toISOString() } : n
+      )
+    );
+  }
+
+  // Limit visible notifications: 2 for mobile, 3 for desktop
   useEffect(() => {
     const updateVisibleNotifications = () => {
-      const maxHeight = window.innerHeight * 0.8; // 80% of viewport height
-      const notificationHeight = 120; // Approximate height per notification
-      const maxVisible = Math.floor(maxHeight / notificationHeight);
+      const isMobile = window.innerWidth < 1024; // lg breakpoint
+      const maxVisible = isMobile ? 2 : 3;
 
       const undismissed = notifications.filter((n) => !n.dismissed_at);
-      setVisibleNotifications(undismissed.slice(0, Math.max(1, maxVisible)));
+      setVisibleNotifications(undismissed.slice(0, maxVisible));
     };
 
     updateVisibleNotifications();
@@ -188,24 +215,33 @@ export function NotificationPopups() {
   if (visibleNotifications.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3 max-w-sm">
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 w-80 max-w-[calc(100vw-2rem)]">
+      {/* Dismiss All Button */}
+      <button
+        onClick={handleDismissAll}
+        className="bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-lg transition-colors self-end"
+      >
+        Dismiss All
+      </button>
+
+      {/* Notifications */}
       {visibleNotifications.map((notification, index) => (
         <div
           key={notification.id}
-          className="bg-white rounded-lg shadow-lg ring-1 ring-gray-200 p-4 transform transition-all duration-300 ease-out"
+          className="bg-white rounded-lg shadow-lg ring-1 ring-gray-200 p-3 transform transition-all duration-300 ease-out"
           style={{
             animation: `slideUp 0.3s ease-out ${index * 50}ms both`,
           }}
         >
-          <div className="flex items-start justify-between gap-3">
-            <p className="text-sm text-gray-900 flex-1">{notification.message}</p>
+          <div className="flex items-start justify-between gap-2">
+            <p className="text-xs text-gray-900 flex-1 leading-relaxed">{notification.message}</p>
             <button
               onClick={() => handleDismiss(notification.id)}
               className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
               aria-label="Dismiss notification"
             >
               <svg
-                className="h-5 w-5"
+                className="h-4 w-4"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth="2"
@@ -219,7 +255,7 @@ export function NotificationPopups() {
               </svg>
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-2">
+          <p className="text-[10px] text-gray-500 mt-1.5">
             {new Date(notification.created_at).toLocaleString()}
           </p>
         </div>

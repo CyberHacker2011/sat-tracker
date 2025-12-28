@@ -112,6 +112,7 @@ export function Navbar() {
 
   const navLinks = [
     { href: "/", label: "Home" },
+    { href: "/focus", label: "Focus ⭐" },
     { href: "/plan", label: "Plan", requiresAuth: true },
     { href: "/check-in", label: "Check-in", requiresAuth: true },
     { href: "/archive", label: "Archive", requiresAuth: true },
@@ -136,11 +137,10 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-sm font-semibold leading-6 transition-colors ${
-                  isActive
-                    ? "text-amber-600"
-                    : "text-gray-900 hover:text-amber-600"
-                }`}
+                className={`text-sm font-semibold leading-6 transition-colors ${isActive
+                  ? "text-amber-600"
+                  : "text-gray-900 hover:text-amber-600"
+                  }`}
               >
                 {link.label}
               </Link>
@@ -190,7 +190,33 @@ export function Navbar() {
         </div>
 
         {/* Mobile menu button */}
-        <div className="flex lg:hidden">
+        <div className="flex items-center gap-3 lg:hidden">
+          {isAuthenticated && (
+            <Link
+              href="/notifications"
+              className="relative text-gray-900 hover:text-amber-600 transition-colors"
+              aria-label="Notifications"
+            >
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
+                />
+              </svg>
+              {notificationCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs font-semibold text-white">
+                  {notificationCount > 9 ? "9+" : notificationCount}
+                </span>
+              )}
+            </Link>
+          )}
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
@@ -241,47 +267,15 @@ export function Navbar() {
                         key={link.href}
                         href={link.href}
                         onClick={() => setIsOpen(false)}
-                        className={`-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 ${
-                          isActive
-                            ? "bg-amber-50 text-amber-600"
-                            : "text-gray-900 hover:bg-gray-50"
-                        }`}
+                        className={`-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 ${isActive
+                          ? "bg-amber-50 text-amber-600"
+                          : "text-gray-900 hover:bg-gray-50"
+                          }`}
                       >
                         {link.label}
                       </Link>
                     );
                   })}
-                  {isAuthenticated && (
-                    <Link
-                      href="/notifications"
-                      onClick={() => setIsOpen(false)}
-                      className={`-mx-3 flex items-center gap-2 rounded-lg px-3 py-2 text-base font-semibold leading-7 ${
-                        pathname === "/notifications"
-                          ? "bg-amber-50 text-amber-600"
-                          : "text-gray-900 hover:bg-gray-50"
-                      }`}
-                    >
-                      <svg
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="1.5"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
-                        />
-                      </svg>
-                      Notifications
-                      {notificationCount > 0 && (
-                        <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs font-semibold text-white">
-                          {notificationCount > 9 ? "9+" : notificationCount}
-                        </span>
-                      )}
-                    </Link>
-                  )}
                 </div>
                 <div className="py-6">
                   {isAuthenticated ? (

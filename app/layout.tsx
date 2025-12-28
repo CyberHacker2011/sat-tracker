@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { UserActivityTracker } from "@/components/UserActivityTracker";
 import { NotificationPopups } from "@/components/NotificationPopups";
+import { NotificationChecker } from "@/components/NotificationChecker";
 import { Navbar } from "@/components/Navbar";
 
 const geistSans = Geist({
@@ -58,8 +59,8 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: process.env.NEXT_PUBLIC_SITE_URL 
-    ? new URL(process.env.NEXT_PUBLIC_SITE_URL) 
+  metadataBase: process.env.NEXT_PUBLIC_SITE_URL
+    ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
     : undefined,
   alternates: {
     canonical: "/",
@@ -113,6 +114,7 @@ export default function RootLayout({
           {children}
         </main>
         <UserActivityTracker />
+        <NotificationChecker />
         <NotificationPopups />
       </body>
     </html>

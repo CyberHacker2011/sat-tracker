@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
     // Verify the request is authorized
     const authHeader = request.headers.get("authorization");
     const cronSecret = process.env.CRON_SECRET;
-    
+
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -133,11 +133,72 @@ export async function POST(request: NextRequest) {
 
             for (const plan of todayPlans) {
               const hasLog = loggedPlanIds.has(plan.id);
+
+              // Check if plan start time has passed
+              const startTimePassed = hasTimePassed(plan.start_time, today);
               const endTimePassed = hasTimePassed(plan.end_time, today);
 
+              // Only notify about start if we're past start but before end
+              if (startTimePassed && !endTimePassed && !hasLog) {
+                const message = `Your ${plan.section} plan is starting at ${plan.start_time}.`;
+
+                // Check if notification already exists for this plan today
+                const { data: existingStartNotif } = await supabase
+                  .from("notifications")
+                  .select("id")
+                  .eq("user_id", user.id)
+                  .eq("message", message)
+                  .gte("created_at", new Date(today + "T00:00:00").toISOString())
+                  .limit(1)
+                  .single();
+
+                if (!existingStartNotif) {
+                  const now = new Date().toISOString();
+
+                  const { data: notification, error: notifError } = await supabase
+                    .from("notifications")
+                    .insert({
+                      user_id: user.id,
+                      message,
+                      created_at: now,
+                    })
+                    .select()
+                    .single();
+
+                  if (!notifError && notification) {
+                    notificationsCreated++;
+
+                    const { data: activity } = await supabase
+                      .from("user_activity")
+                      .select("last_seen_at")
+                      .eq("user_id", user.id)
+                      .single();
+
+                    let shouldSendEmail = false;
+                    if (activity && activity.last_seen_at) {
+                      const lastSeen = new Date(activity.last_seen_at);
+                      const notifCreated = new Date(notification.created_at);
+                      shouldSendEmail = lastSeen < notifCreated;
+                    } else {
+                      shouldSendEmail = true;
+                    }
+
+                    if (shouldSendEmail) {
+                      const emailSent = await sendEmail(
+                        user.email || "",
+                        "SAT Plan Starting",
+                        message
+                      );
+                      if (emailSent) emailsSent++;
+                    }
+                  }
+                }
+              }
+
+              // Check for missed check-ins (only one notification)
               if (endTimePassed && !hasLog) {
                 const message = `Your ${plan.section} plan ending at ${plan.end_time} has no check-in.`;
-                
+
                 // Idempotency: Check if notification already exists for this plan today
                 const { data: existingNotif } = await supabase
                   .from("notifications")
@@ -150,7 +211,7 @@ export async function POST(request: NextRequest) {
 
                 if (!existingNotif) {
                   const now = new Date().toISOString();
-                  
+
                   // Insert notification
                   const { data: notification, error: notifError } = await supabase
                     .from("notifications")
@@ -210,14 +271,14 @@ export async function POST(request: NextRequest) {
 
           if (!hasPlanForTomorrow) {
             const message = "You have not created a SAT study plan for tomorrow.";
-            
-            // Idempotency: Check if notification already exists for tomorrow
+
+            // Idempotency: Check if notification already exists today
             const { data: existingNotif } = await supabase
               .from("notifications")
               .select("id")
               .eq("user_id", user.id)
               .eq("message", message)
-              .gte("created_at", new Date(tomorrow + "T00:00:00").toISOString())
+              .gte("created_at", new Date(today + "T00:00:00").toISOString())
               .limit(1)
               .single();
 
