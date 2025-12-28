@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-const PUBLIC_PATHS = ["/", "/login", "/_next", "/favicon.ico"];
+const PUBLIC_PATHS = ["/", "/login", "/_next", "/favicon.ico", "/api"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -47,7 +47,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api).*)"],
 };
 
 
