@@ -11,14 +11,7 @@ function getTodayDateString() {
     return `${year}-${month}-${day}`;
 }
 
-function getTomorrowDateString() {
-    const now = new Date();
-    now.setDate(now.getDate() + 1);
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-}
+
 
 function hasTimePassed(hhmm: string, dateString: string) {
     const [h, m] = hhmm.split(":").map(Number);
@@ -47,7 +40,7 @@ export function NotificationChecker() {
                 if (!user) return;
 
                 const today = getTodayDateString();
-                const tomorrow = getTomorrowDateString();
+
 
                 console.log("[NotificationChecker] Checking notifications at", new Date().toLocaleTimeString());
 
@@ -125,31 +118,7 @@ export function NotificationChecker() {
                     }
                 }
 
-                // Check for no plan for tomorrow
-                const { data: tomorrowPlans, error: tomorrowError } = await supabase
-                    .from("study_plan")
-                    .select("id")
-                    .eq("user_id", user.id)
-                    .eq("date", tomorrow);
 
-                if (!tomorrowError) {
-                    const hasPlanForTomorrow = tomorrowPlans && tomorrowPlans.length > 0;
-
-                    if (!hasPlanForTomorrow) {
-                        const message = "You have not created a SAT study plan for tomorrow.";
-
-                        // Create notification via API
-                        try {
-                            await fetch("/api/create_notification", {
-                                method: "POST",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ user_id: user.id, message }),
-                            });
-                        } catch (err) {
-                            console.error("[NotificationChecker] Error creating no plan notification:", err);
-                        }
-                    }
-                }
             } catch (error) {
                 console.error("Error checking notifications:", error);
             }
