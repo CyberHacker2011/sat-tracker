@@ -15,18 +15,18 @@ export default function Home() {
             Increase your productivity and maximize your SAT preparation with our intuitive platform.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <a
+            <Link
               href="/login"
               className="rounded-lg bg-amber-600 px-8 py-3 text-base font-semibold text-white shadow-sm hover:bg-amber-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600"
             >
               Get Started
-            </a>
-            <a
+            </Link>
+            <Link
               href="/#features"
               className="rounded-lg bg-white px-8 py-3 text-base font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-600"
             >
               Learn More
-            </a>
+            </Link>
           </div>
         </div>
       </section>

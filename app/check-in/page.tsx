@@ -85,16 +85,6 @@ export default function CheckInPage() {
   const [loading, setLoading] = useState(true);
   const [savingPlanId, setSavingPlanId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  // Update current time every minute for real-time start time checks
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000); // Update every minute
-
-    return () => clearInterval(intervalId);
-  }, []);
 
   useEffect(() => {
     async function loadData() {
@@ -170,6 +160,40 @@ export default function CheckInPage() {
     }
 
     loadData();
+
+    // Realtime subscriptions for instant updates
+    const planChannel = supabase
+      .channel("check-in-plans")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "study_plan" },
+        (payload) => {
+          console.log('[CheckIn] Plan change:', payload.eventType);
+          loadData(); // Reload when plans created/updated/deleted
+        }
+      )
+      .subscribe((status) => {
+        console.log('[CheckIn] Plan subscription:', status);
+      });
+
+    const logChannel = supabase
+      .channel("check-in-logs")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "daily_log" },
+        (payload) => {
+          console.log('[CheckIn] Log change:', payload.eventType);
+          loadData(); // Reload when check-ins logged
+        }
+      )
+      .subscribe((status) => {
+        console.log('[CheckIn] Log subscription:', status);
+      });
+
+    return () => {
+      supabase.removeChannel(planChannel);
+      supabase.removeChannel(logChannel);
+    };
   }, [supabase]);
 
   async function handleCheckIn(plan: StudyPlan, status: Status) {

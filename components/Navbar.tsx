@@ -39,16 +39,18 @@ export function Navbar() {
       return;
     }
 
-    type RealtimeChannel = ReturnType<typeof supabase.channel>;
-    let channel: RealtimeChannel | null = null;
+    let mounted = true;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
 
     async function fetchNotificationCount() {
+      if (!mounted) return;
+      
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
       if (!user) {
-        setNotificationCount(0);
+        if (mounted) setNotificationCount(0);
         return;
       }
 
@@ -58,10 +60,12 @@ export function Navbar() {
         .eq("user_id", user.id)
         .is("dismissed_at", null);
 
-      if (!error && count !== null) {
-        setNotificationCount(count);
-      } else {
-        setNotificationCount(0);
+      if (mounted) {
+        if (!error && count !== null) {
+          setNotificationCount(count);
+        } else {
+          setNotificationCount(0);
+        }
       }
     }
 
@@ -70,8 +74,12 @@ export function Navbar() {
         data: { user },
       } = await supabase.auth.getUser();
 
-      if (!user) return;
+      if (!user || !mounted) return;
 
+      // Initial Fetch
+      fetchNotificationCount();
+
+      // Subscribe to ALL changes for this user
       channel = supabase
         .channel(`notification-count:${user.id}`)
         .on(
@@ -82,22 +90,36 @@ export function Navbar() {
             table: "notifications",
             filter: `user_id=eq.${user.id}`,
           },
-          () => {
+          (payload: { eventType: string; new?: { dismissed_at?: string | null }; old?: { dismissed_at?: string | null } }) => {
+            console.log('[Navbar] Realtime event:', payload.eventType, payload);
+            
+            // Optimistic counter update based on event type
+            if (payload.eventType === 'INSERT' && !payload.new?.dismissed_at) {
+              // New notification created
+              setNotificationCount((prev) => prev + 1);
+            } else if (payload.eventType === 'UPDATE' && payload.new?.dismissed_at && !payload.old?.dismissed_at) {
+              // Notification dismissed
+              setNotificationCount((prev) => Math.max(0, prev - 1));
+            }
+            
+            // Also fetch to ensure accuracy
             fetchNotificationCount();
           }
         )
-        .subscribe();
+        .subscribe((status) => {
+          console.log('[Navbar] Subscription status:', status);
+        });
     }
 
-    fetchNotificationCount();
     setupSubscription();
 
-    // Poll for updates every 30 seconds as fallback
-    const intervalId = setInterval(fetchNotificationCount, 30000);
+    // Reduced polling as fallback (60 seconds)
+    const intervalId = setInterval(fetchNotificationCount, 60000);
 
     return () => {
+      mounted = false;
       if (channel) {
-        channel.unsubscribe();
+        supabase.removeChannel(channel);
       }
       clearInterval(intervalId);
     };
@@ -121,7 +143,7 @@ export function Navbar() {
   const filteredNavLinks = navLinks.filter(link => !link.requiresAuth || isAuthenticated);
 
   return (
-    <header className="border-b border-gray-200 bg-white">
+    <header className="border-b border-gray-200 bg-white relative z-40">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8" aria-label="Global">
         <div className="flex items-center">
           <Link href="/" className="text-xl font-bold text-gray-900 hover:text-amber-600 transition-colors">
@@ -240,8 +262,8 @@ export function Navbar() {
       {/* Mobile menu */}
       {isOpen && (
         <div className="lg:hidden" role="dialog" aria-modal="true">
-          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)}></div>
-          <div className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-4 py-4 sm:max-w-sm sm:ring-1 sm:ring-gray-200">
+          <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm" onClick={() => setIsOpen(false)}></div>
+          <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-4 py-4 sm:max-w-sm sm:ring-1 sm:ring-gray-200">
             <div className="flex items-center justify-between">
               <Link href="/" className="text-xl font-bold text-gray-900" onClick={() => setIsOpen(false)}>
                 SAT Tracker
@@ -249,7 +271,7 @@ export function Navbar() {
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="-m-2.5 rounded-lg p-2.5 text-gray-700"
+                className="-m-2.5 rounded-lg p-2.5 text-gray-700 hover:bg-gray-100"
               >
                 <span className="sr-only">Close menu</span>
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">

@@ -15,7 +15,7 @@ export default function FocusPage() {
 
     function playSound(frequency: number, duration: number) {
         try {
-            const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+            const AudioContextClass = window.AudioContext || (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
             if (!AudioContextClass) return;
 
             const audioContext = new AudioContextClass();
@@ -94,7 +94,7 @@ export default function FocusPage() {
                 clearInterval(intervalRef.current);
             }
         };
-    }, [isRunning, timeLeft, mode]);
+    }, [isRunning, timeLeft, mode, FOCUS_TIME, BREAK_TIME]);
 
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;

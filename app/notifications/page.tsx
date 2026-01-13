@@ -17,9 +17,11 @@ export default function NotificationsPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let mounted = true;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
     async function fetchNotifications() {
-      setLoading(true);
-      setError(null);
+      if (!mounted) return;
 
       try {
         const {
@@ -27,9 +29,7 @@ export default function NotificationsPage() {
           error: userError,
         } = await supabase.auth.getUser();
 
-        if (userError || !user) {
-          throw userError ?? new Error("You must be signed in to view notifications.");
-        }
+        if (userError || !user) return;
 
         const { data, error: fetchError } = await supabase
           .from("notifications")
@@ -37,19 +37,58 @@ export default function NotificationsPage() {
           .eq("user_id", user.id)
           .order("created_at", { ascending: false });
 
-        if (fetchError) {
-          throw fetchError;
-        }
+        if (fetchError) throw fetchError;
 
-        setNotifications((data as Notification[]) || []);
+        if (mounted) {
+          setNotifications((data as Notification[]) || []);
+          setLoading(false);
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load notifications.");
-      } finally {
-        setLoading(false);
+        if (mounted) {
+          setError(err instanceof Error ? err.message : "Failed to load notifications.");
+          setLoading(false);
+        }
       }
     }
 
-    fetchNotifications();
+    async function setupSubscription() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user || !mounted) return;
+
+      // Initial fetch
+      fetchNotifications();
+
+      channel = supabase
+        .channel(`notifications-page:${user.id}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "notifications",
+            filter: `user_id=eq.${user.id}`,
+          },
+          (payload) => {
+            console.log('[NotificationsPage] Realtime event received:', payload);
+            fetchNotifications();
+          }
+        )
+        .subscribe((status) => {
+          console.log('[NotificationsPage] Subscription status:', status);
+        });
+    }
+
+    setupSubscription();
+
+    return () => {
+      mounted = false;
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, [supabase]);
 
   async function handleDismiss(notificationId: string) {
