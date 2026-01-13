@@ -4,14 +4,21 @@ import { useState, useEffect, useRef } from "react";
 
 type TimerMode = "focus" | "break" | "idle";
 
-export default function FocusPage() {
+export default function PomodoroPage() {
     const [mode, setMode] = useState<TimerMode>("idle");
-    const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
     const [isRunning, setIsRunning] = useState(false);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    const FOCUS_TIME = 25 * 60; // 25 minutes
-    const BREAK_TIME = 5 * 60; // 5 minutes
+    // User-configurable timer settings (in minutes)
+    const [focusMinutes, setFocusMinutes] = useState(25);
+    const [breakMinutes, setBreakMinutes] = useState(5);
+
+    // Time left in seconds
+    const [timeLeft, setTimeLeft] = useState(focusMinutes * 60);
+
+    // Calculate times in seconds from user input
+    const FOCUS_TIME = focusMinutes * 60;
+    const BREAK_TIME = breakMinutes * 60;
 
     function playSound(frequency: number, duration: number) {
         try {
@@ -54,11 +61,13 @@ export default function FocusPage() {
     function resetTimer() {
         setIsRunning(false);
         setMode("idle");
-        setTimeLeft(FOCUS_TIME);
+        setTimeLeft(FOCUS_TIME); // Reset to current focus time setting
         if (intervalRef.current) {
             clearInterval(intervalRef.current);
         }
     }
+
+    // State updates are now handled directly in the onChange handlers
 
     useEffect(() => {
         if (isRunning && timeLeft > 0) {
@@ -96,8 +105,21 @@ export default function FocusPage() {
         };
     }, [isRunning, timeLeft, mode, FOCUS_TIME, BREAK_TIME]);
 
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
+    // Timer display calculation
+    const hours = Math.floor(timeLeft / 3600);
+    const displayMinutes = Math.floor((timeLeft % 3600) / 60);
+    const displaySeconds = timeLeft % 60;
+    
+    // Determine format and size
+    const showHours = hours > 0;
+    const timeDisplay = showHours 
+        ? `${hours}:${String(displayMinutes).padStart(2, "0")}:${String(displaySeconds).padStart(2, "0")}`
+        : `${String(displayMinutes).padStart(2, "0")}:${String(displaySeconds).padStart(2, "0")}`;
+        
+    // Adjust font size based on length/format
+    const fontSizeClass = showHours 
+        ? "text-5xl sm:text-6xl" 
+        : "text-7xl sm:text-8xl";
 
     // Calculate progress for the ring
     // idle: 1 (full)
@@ -106,6 +128,8 @@ export default function FocusPage() {
     const progress = mode === "idle" ? 1 : timeLeft / totalTime;
     const circumference = 2 * Math.PI * 180;
     const strokeDashoffset = circumference * (1 - progress);
+
+    const isTimerActive = mode !== "idle";
 
     return (
         <div className="relative min-h-[calc(100vh-64px)] flex items-center justify-center overflow-hidden bg-white">
@@ -145,8 +169,8 @@ export default function FocusPage() {
 
                     {/* Timer Content */}
                     <div className="flex flex-col items-center justify-center z-10 text-slate-900">
-                        <div className={`text-7xl sm:text-8xl font-mono font-light tracking-tighter tabular-nums select-none ${isRunning ? 'animate-pulse-slow' : ''}`}>
-                            {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
+                        <div className={`${fontSizeClass} font-mono font-light tracking-tighter tabular-nums select-none ${isRunning ? 'animate-pulse-slow' : ''}`}>
+                            {timeDisplay}
                         </div>
                         <div className="text-xl font-medium text-slate-500 mt-4 tracking-widest uppercase">
                             {mode === "idle" ? "Ready" : mode === "focus" ? "Focusing" : "Resting"}
@@ -155,13 +179,13 @@ export default function FocusPage() {
                 </div>
 
                 {/* Controls */}
-                <div className="flex items-center justify-center gap-6 w-full">
+                <div className="flex items-center justify-center gap-6 w-full mb-10">
                     {!isRunning && mode === "idle" && (
                         <button
                             onClick={startTimer}
                             className="group relative inline-flex items-center justify-center px-8 py-3 bg-amber-600 hover:bg-amber-500 text-white rounded-full font-semibold transition-all duration-200 shadow-[0_4px_20px_rgba(217,119,6,0.3)] hover:shadow-[0_6px_30px_rgba(217,119,6,0.4)] hover:-translate-y-0.5"
                         >
-                            Start Focus
+                            Start Pomodoro
                         </button>
                     )}
 
@@ -193,17 +217,65 @@ export default function FocusPage() {
                     )}
                 </div>
 
-                {/* Helper Text */}
-                <div className="mt-12 flex gap-8 text-slate-400 text-sm font-medium">
-                    <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-amber-600 shadow-[0_0_10px_rgba(217,119,6,0.5)]"></div>
-                        <span>Focus 25m</span>
+                {/* Timer Settings - Moved below controls */}
+                {!isTimerActive && (
+                    <div className="mb-8 w-full max-w-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="bg-white/50 backdrop-blur-sm rounded-xl border border-gray-100 p-4 flex items-center gap-4 shadow-sm">
+                            <div className="flex-1">
+                                <label htmlFor="focus-time" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5 text-center">
+                                    Focus Mode
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        id="focus-time"
+                                        type="number"
+                                        min="1"
+                                        max="1440" // 24 hours
+                                        value={focusMinutes}
+                                        onChange={(e) => {
+                                            const val = Math.max(1, Math.min(1440, parseInt(e.target.value) || 1));
+                                            setFocusMinutes(val);
+                                            setTimeLeft(val * 60);
+                                        }}
+                                        className="w-full rounded-lg bg-amber-50 border-0 py-2 text-center text-xl font-bold text-amber-900 focus:ring-2 focus:ring-amber-500/20 placeholder-amber-300 pointer-events-auto"
+                                    />
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-amber-600/50 pointer-events-none">min</span>
+                                </div>
+                            </div>
+                            <div className="w-px h-12 bg-gray-200"></div>
+                            <div className="flex-1">
+                                <label htmlFor="break-time" className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5 text-center">
+                                    Short Break
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        id="break-time"
+                                        type="number"
+                                        min="1"
+                                        max="720" // 12 hours
+                                        value={breakMinutes}
+                                        onChange={(e) => setBreakMinutes(Math.max(1, Math.min(720, parseInt(e.target.value) || 1)))}
+                                        className="w-full rounded-lg bg-emerald-50 border-0 py-2 text-center text-xl font-bold text-emerald-900 focus:ring-2 focus:ring-emerald-500/20 placeholder-emerald-300 pointer-events-auto"
+                                    />
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-medium text-emerald-600/50 pointer-events-none">min</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
-                        <span>Break 5m</span>
+                )}
+
+                {isTimerActive && (
+                    <div className="mt-2 flex gap-8 text-slate-400 text-sm font-medium animate-in fade-in duration-500">
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-amber-600 shadow-[0_0_10px_rgba(217,119,6,0.5)]"></div>
+                            <span>Focus {focusMinutes}m</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
+                            <span>Break {breakMinutes}m</span>
+                        </div>
                     </div>
-                </div>
+                )}
 
             </div>
 

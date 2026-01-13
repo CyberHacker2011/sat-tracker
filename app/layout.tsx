@@ -5,6 +5,7 @@ import { UserActivityTracker } from "@/components/UserActivityTracker";
 import { NotificationPopups } from "@/components/NotificationPopups";
 import { NotificationChecker } from "@/components/NotificationChecker";
 import { Navbar } from "@/components/Navbar";
+import { FeedbackPopup } from "@/components/FeedbackPopup";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -116,6 +117,7 @@ export default function RootLayout({
         <UserActivityTracker />
         <NotificationChecker />
         <NotificationPopups />
+        <FeedbackPopup />
       </body>
     </html>
   );

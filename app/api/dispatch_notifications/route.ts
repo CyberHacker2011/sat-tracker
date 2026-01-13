@@ -2,6 +2,38 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
 
+function getEmailHtml(subject: string, message: string) {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.satracker.uz';
+  
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${subject}</title>
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 0;">
+    <div style="max-width: 600px; width: 100%; margin: 0 auto; padding: 40px 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <a href="${siteUrl}" style="color: #d97706; font-size: 26px; font-weight: bold; text-decoration: none; font-family: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif; letter-spacing: -0.5px;">SAT Tracker</a>
+        </div>
+        <div style="background-color: #ffffff; border-radius: 16px; padding: 40px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); border: 1px solid #f3f4f6;">
+            <h1 style="color: #111827; font-size: 22px; font-weight: 700; margin-top: 0; margin-bottom: 24px; text-align: center; letter-spacing: -0.5px;">${subject}</h1>
+            <p style="color: #4b5563; font-size: 16px; line-height: 26px; margin-bottom: 32px; text-align: center;">${message}</p>
+            <div style="text-align: center;">
+                <a href="${siteUrl}" style="display: inline-block; background-color: #d97706; color: #ffffff; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; transition: background-color 0.2s;">Open SAT Tracker</a>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 32px; color: #9ca3af; font-size: 14px;">
+            <p style="margin: 0;">&copy; ${new Date().getFullYear()} SAT Tracker. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
+  `;
+}
+
 function getTodayDateString() {
   const now = new Date();
   const year = now.getFullYear();
@@ -41,7 +73,7 @@ async function sendEmail(userEmail: string, subject: string, message: string) {
       from: process.env.RESEND_FROM_EMAIL || "notifications@yourdomain.com",
       to: userEmail,
       subject,
-      html: `<p>${message}</p>`,
+      html: getEmailHtml(subject, message),
     });
     return true;
   } catch (error) {

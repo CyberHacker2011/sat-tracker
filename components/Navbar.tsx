@@ -134,10 +134,11 @@ export function Navbar() {
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/focus", label: "Focus ⭐" },
+    { href: "/focus", label: "Pomodoro 🍅" },
     { href: "/plan", label: "Plan", requiresAuth: true },
     { href: "/check-in", label: "Check-in", requiresAuth: true },
     { href: "/archive", label: "Archive", requiresAuth: true },
+    { href: "https://t.me/ibrohimfr", label: "Feedback", external: true },
   ];
 
   const filteredNavLinks = navLinks.filter(link => !link.requiresAuth || isAuthenticated);
@@ -155,6 +156,22 @@ export function Navbar() {
         <div className="hidden lg:flex lg:items-center lg:gap-x-8">
           {filteredNavLinks.map((link) => {
             const isActive = pathname === link.href;
+            const isExternal = (link as any).external;
+            
+            if (isExternal) {
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-semibold leading-6 text-gray-900 hover:text-amber-600 transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                );
+            }
+
             return (
               <Link
                 key={link.href}
@@ -284,6 +301,23 @@ export function Navbar() {
                 <div className="space-y-2 py-6">
                   {filteredNavLinks.map((link) => {
                     const isActive = pathname === link.href;
+                    const isExternal = (link as any).external;
+
+                    if (isExternal) {
+                        return (
+                          <a
+                            key={link.href}
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setIsOpen(false)}
+                            className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                          >
+                            {link.label}
+                          </a>
+                        );
+                    }
+
                     return (
                       <Link
                         key={link.href}
