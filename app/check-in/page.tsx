@@ -125,6 +125,26 @@ export default function CheckInPage() {
           }
           grouped[plan.date].push(plan as StudyPlan);
         });
+
+        // Sort plans within each date by proximity to current time
+        const now = new Date();
+        const getPlanDate = (dateStr: string, timeStr: string) => {
+          const [h, m] = timeStr.split(':').map(Number);
+          const d = new Date(dateStr + 'T00:00:00');
+          d.setHours(h, m, 0, 0);
+          return d;
+        };
+
+        Object.keys(grouped).forEach((date) => {
+          grouped[date].sort((a, b) => {
+            const dateA = getPlanDate(a.date, a.start_time);
+            const dateB = getPlanDate(b.date, b.start_time);
+            const diffA = Math.abs(dateA.getTime() - now.getTime());
+            const diffB = Math.abs(dateB.getTime() - now.getTime());
+            return diffA - diffB;
+          });
+        });
+
         setPlansByDate(grouped);
 
         if (!plansData || plansData.length === 0) {
