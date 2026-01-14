@@ -133,7 +133,7 @@ export function Navbar() {
   }
 
   const navLinks = [
-    { href: "/", label: "Home" },
+    { href: isAuthenticated ? "/dashboard" : "/", label: "Home" },
     { href: "/focus", label: "Pomodoro 🍅" },
     { href: "/plan", label: "Plan", requiresAuth: true },
     { href: "/check-in", label: "Check-in", requiresAuth: true },
@@ -147,7 +147,7 @@ export function Navbar() {
     <header className="border-b border-gray-200 bg-white relative z-40">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8" aria-label="Global">
         <div className="flex items-center">
-          <Link href="/" className="text-xl font-bold text-gray-900 hover:text-amber-600 transition-colors">
+          <Link href={isAuthenticated ? "/dashboard" : "/"} className="text-xl font-bold text-gray-900 hover:text-amber-600 transition-colors">
             SAT Tracker
           </Link>
         </div>

@@ -10,7 +10,8 @@ export async function middleware(req: NextRequest) {
     pathname === path || pathname.startsWith(path + "/")
   );
 
-  if (isPublic) {
+  // If it's a public path but NOT login, skip middleware processing
+  if (isPublic && pathname !== "/login") {
     return NextResponse.next();
   }
 
@@ -37,7 +38,19 @@ export async function middleware(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
-  if (!session) {
+  if (pathname === "/" && session) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
+  // Redirect signed-in users trying to access login page
+  if (pathname === "/login" && session) {
+    const planUrl = new URL("/plan", req.url);
+    planUrl.searchParams.set("notification", "already_signed_in");
+    return NextResponse.redirect(planUrl);
+  }
+
+  // Protect non-public routes
+  if (!session && !isPublic) {
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("redirectedFrom", pathname);
     return NextResponse.redirect(loginUrl);

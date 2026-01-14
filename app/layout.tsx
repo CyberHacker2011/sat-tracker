@@ -6,6 +6,7 @@ import { NotificationPopups } from "@/components/NotificationPopups";
 import { NotificationChecker } from "@/components/NotificationChecker";
 import { Navbar } from "@/components/Navbar";
 import { FeedbackPopup } from "@/components/FeedbackPopup";
+import { AuthRedirectToast } from "@/components/AuthRedirectToast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -118,6 +119,7 @@ export default function RootLayout({
         <NotificationChecker />
         <NotificationPopups />
         <FeedbackPopup />
+        <AuthRedirectToast />
       </body>
     </html>
   );

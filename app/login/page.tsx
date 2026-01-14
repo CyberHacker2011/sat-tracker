@@ -15,8 +15,9 @@ function LoginContent() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [checkEmail, setCheckEmail] = useState(false);
 
-  const redirectTo = searchParams.get("redirectedFrom") || "/plan";
+  const redirectTo = searchParams.get("redirectedFrom") || "/dashboard";
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -32,21 +33,65 @@ function LoginContent() {
           password,
         });
         if (signInError) throw signInError;
+        router.push(redirectTo);
+        router.refresh();
       } else {
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
         });
         if (signUpError) throw signUpError;
+        setCheckEmail(true);
       }
-
-      router.push(redirectTo);
-      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Authentication failed");
     } finally {
       setLoading(false);
     }
+  }
+
+  if (checkEmail) {
+    return (
+      <div className="flex min-h-[calc(100vh-64px)] items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md">
+          <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200 sm:p-10 text-center">
+            <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+              <svg
+                className="h-6 w-6 text-green-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
+                />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900 mb-4">
+              Check your email
+            </h2>
+            <p className="text-gray-600 mb-8">
+              We've sent a verification link to <span className="font-semibold text-gray-900">{email}</span>.
+              <br />
+              Please check your inbox to authenticate your account.
+            </p>
+            <button
+              onClick={() => {
+                setCheckEmail(false);
+                setMode("sign-in");
+              }}
+              className="font-semibold text-amber-600 hover:text-amber-500"
+            >
+              ← Back to sign in
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
