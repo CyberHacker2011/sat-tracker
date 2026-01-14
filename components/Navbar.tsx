@@ -132,7 +132,14 @@ export function Navbar() {
     router.refresh();
   }
 
-  const navLinks = [
+  interface NavLink {
+    href: string;
+    label: string;
+    requiresAuth?: boolean;
+    external?: boolean;
+  }
+
+  const navLinks: NavLink[] = [
     { href: isAuthenticated ? "/dashboard" : "/", label: "Home" },
     { href: "/focus", label: "Pomodoro 🍅" },
     { href: "/plan", label: "Plan", requiresAuth: true },
@@ -156,7 +163,7 @@ export function Navbar() {
         <div className="hidden lg:flex lg:items-center lg:gap-x-8">
           {filteredNavLinks.map((link) => {
             const isActive = pathname === link.href;
-            const isExternal = (link as any).external;
+            const isExternal = link.external;
             
             if (isExternal) {
                 return (
@@ -301,7 +308,7 @@ export function Navbar() {
                 <div className="space-y-2 py-6">
                   {filteredNavLinks.map((link) => {
                     const isActive = pathname === link.href;
-                    const isExternal = (link as any).external;
+                    const isExternal = link.external;
 
                     if (isExternal) {
                         return (

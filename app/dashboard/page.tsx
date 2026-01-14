@@ -35,7 +35,7 @@ export default function DashboardPage() {
           Welcome back, {userName ? <span className="text-amber-600 capitalize">{userName}</span> : "Student"}!
         </h1>
         <p className="mt-2 text-lg leading-8 text-gray-600">
-          Ready to crush your SAT goals today? Here's your command center.
+          Ready to crush your SAT goals today? Here&apos;s your command center.
         </p>
       </div>
 
@@ -78,7 +78,7 @@ export default function DashboardPage() {
               </Link>
             </h3>
             <p className="mt-2 text-sm leading-6 text-gray-600">
-              Log your progress for the day. Mark tasks as complete and reflect on what you've learned.
+              Log your progress for the day. Mark tasks as complete and reflect on what you&apos;ve learned.
             </p>
           </div>
           <div className="mt-6 flex items-center gap-x-2 text-sm font-semibold leading-6 text-blue-600 group-hover:text-blue-500">
@@ -101,7 +101,7 @@ export default function DashboardPage() {
               </Link>
             </h3>
             <p className="mt-2 text-sm leading-6 text-gray-600">
-              View your past study history and track your consistency over time. See how far you've come.
+              View your past study history and track your consistency over time. See how far you&apos;ve come.
             </p>
           </div>
           <div className="mt-6 flex items-center gap-x-2 text-sm font-semibold leading-6 text-gray-600 group-hover:text-gray-800">

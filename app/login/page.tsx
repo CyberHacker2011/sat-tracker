@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, Suspense, useState } from "react";
+import { FormEvent, Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
@@ -18,6 +18,27 @@ function LoginContent() {
   const [checkEmail, setCheckEmail] = useState(false);
 
   const redirectTo = searchParams.get("redirectedFrom") || "/dashboard";
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    let mounted = true;
+    async function checkUser() {
+      const supabase = getSupabaseBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!mounted) return;
+
+      if (user) {
+        router.push(redirectTo);
+      } else {
+        setIsCheckingAuth(false);
+      }
+    }
+    checkUser();
+    return () => {
+      mounted = false;
+    };
+  }, [router, redirectTo]);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -34,7 +55,6 @@ function LoginContent() {
         });
         if (signInError) throw signInError;
         router.push(redirectTo);
-        router.refresh();
       } else {
         const { error: signUpError } = await supabase.auth.signUp({
           email,
@@ -75,7 +95,7 @@ function LoginContent() {
               Check your email
             </h2>
             <p className="text-gray-600 mb-8">
-              We've sent a verification link to <span className="font-semibold text-gray-900">{email}</span>.
+              We&apos;ve sent a verification link to <span className="font-semibold text-gray-900">{email}</span>.
               <br />
               Please check your inbox to authenticate your account.
             </p>
@@ -97,7 +117,12 @@ function LoginContent() {
   return (
     <div className="flex min-h-[calc(100vh-64px)] items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200 sm:p-10">
+        {isCheckingAuth ? (
+          <div className="text-center">
+            <p className="text-sm text-gray-600 animate-pulse">Checking authentication...</p>
+          </div>
+        ) : (
+          <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200 sm:p-10">
           <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
               {mode === "sign-in" ? "Welcome back" : "Create your account"}
@@ -185,11 +210,12 @@ function LoginContent() {
               className="font-semibold text-amber-600 hover:text-amber-500"
             >
               {mode === "sign-in"
-                ? "Don't have an account? Sign up"
+                ? "Don&apos;t have an account? Sign up"
                 : "Already have an account? Sign in"}
             </button>
           </div>
-        </div>
+          </div>
+        )}
 
         <div className="mt-6 text-center text-sm text-gray-600">
           <Link href="/" className="font-semibold text-gray-900 hover:text-gray-700">

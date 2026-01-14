@@ -9,12 +9,18 @@ export function AuthRedirectToast() {
 
   useEffect(() => {
     if (searchParams.get("notification") === "already_signed_in") {
-      setIsVisible(true);
-      const timer = setTimeout(() => {
+      const showTimer = setTimeout(() => {
+        setIsVisible(true);
+      }, 0);
+      
+      const hideTimer = setTimeout(() => {
         setIsVisible(false);
       }, 5000);
 
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(showTimer);
+        clearTimeout(hideTimer);
+      };
     }
   }, [searchParams]);
 

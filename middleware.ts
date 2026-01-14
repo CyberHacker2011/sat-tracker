@@ -10,8 +10,8 @@ export async function middleware(req: NextRequest) {
     pathname === path || pathname.startsWith(path + "/")
   );
 
-  // If it's a public path but NOT login, skip middleware processing
-  if (isPublic && pathname !== "/login") {
+  // If it's a public path but NOT login and NOT root, skip middleware processing
+  if (isPublic && pathname !== "/login" && pathname !== "/") {
     return NextResponse.next();
   }
 
@@ -44,9 +44,9 @@ export async function middleware(req: NextRequest) {
 
   // Redirect signed-in users trying to access login page
   if (pathname === "/login" && session) {
-    const planUrl = new URL("/plan", req.url);
-    planUrl.searchParams.set("notification", "already_signed_in");
-    return NextResponse.redirect(planUrl);
+    const dashboardUrl = new URL("/dashboard", req.url);
+    dashboardUrl.searchParams.set("notification", "already_signed_in");
+    return NextResponse.redirect(dashboardUrl);
   }
 
   // Protect non-public routes
