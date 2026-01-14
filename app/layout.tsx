@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { UserActivityTracker } from "@/components/UserActivityTracker";
 import { NotificationPopups } from "@/components/NotificationPopups";
@@ -119,7 +120,9 @@ export default function RootLayout({
         <NotificationChecker />
         <NotificationPopups />
         <FeedbackPopup />
-        <AuthRedirectToast />
+        <Suspense fallback={null}>
+          <AuthRedirectToast />
+        </Suspense>
       </body>
     </html>
   );
