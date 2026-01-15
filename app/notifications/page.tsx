@@ -206,10 +206,10 @@ function PageNotificationItem({ notification, isActive, onDismiss }: any) {
       {isActive && planId && (
         <div className="mt-6">
             <Link
-                href={`/focus?planId=${planId}`}
+                href={`/study-room?planId=${planId}`}
                 className="inline-flex items-center justify-center w-full bg-amber-500 text-white text-[10px] font-bold py-3 rounded-xl uppercase tracking-widest hover:bg-amber-600 transition-all shadow-md shadow-amber-500/10 active:scale-95"
             >
-                Open Study Timer
+                Enter Study Room
             </Link>
         </div>
       )}

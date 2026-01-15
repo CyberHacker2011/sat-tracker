@@ -73,8 +73,12 @@ export default function PomodoroPage() {
     }
 
     const formatTime = (s: number) => {
-        const m = Math.floor(s / 60);
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60);
         const sec = s % 60;
+        if (h > 0) {
+            return `${h}:${m < 10 ? "0" : ""}${m}:${sec < 10 ? "0" : ""}${sec}`;
+        }
         return `${m}:${sec < 10 ? "0" : ""}${sec}`;
     };
 
@@ -113,7 +117,7 @@ export default function PomodoroPage() {
                         <p className={`text-[10px] font-black uppercase tracking-[0.4em] mb-4 ${mode === "focus" ? "text-amber-500" : mode === "break" ? "text-emerald-500" : "text-slate-300"}`}>
                             {mode === "idle" ? "Ready" : mode === "focus" ? "Deep Work" : "Resting"}
                         </p>
-                        <h2 className="text-7xl md:text-9xl font-black text-slate-900 tabular-nums tracking-tighter leading-none">{formatTime(timeLeft)}</h2>
+                        <h2 className={`font-black text-slate-900 tabular-nums tracking-tighter leading-none transition-all ${timeLeft >= 3600 ? 'text-5xl md:text-7xl' : 'text-7xl md:text-9xl'}`}>{formatTime(timeLeft)}</h2>
                     </div>
                 </div>
 
@@ -144,7 +148,7 @@ export default function PomodoroPage() {
                             <div className="text-center group">
                                 <label className="block text-[9px] font-black text-slate-300 group-hover:text-amber-500 uppercase tracking-widest mb-3 transition-colors">Study m</label>
                                 <input type="number" value={focusMinutes} onChange={e => {
-                                    const v = Math.max(1, parseInt(e.target.value) || 1);
+                                    const v = Math.min(720, Math.max(1, parseInt(e.target.value) || 1));
                                     setFocusMinutes(v);
                                     if (mode === "idle" || mode === "focus") setTimeLeft(v * 60);
                                 }} className="w-16 bg-transparent text-center text-3xl font-black text-slate-800 focus:outline-none" />

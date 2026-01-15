@@ -72,20 +72,27 @@ export function NotificationPopups() {
         setNotifications(data as Notification[]);
 
         if (isFirstLoadRef.current) {
-            data.forEach((n) => playedSoundsRef.current.add(n.id));
-            isFirstLoadRef.current = false;
-        } else {
-            let hasNew = false;
-            data.forEach((notif) => {
-                if (!playedSoundsRef.current.has(notif.id)) {
-                    hasNew = true;
-                    playedSoundsRef.current.add(notif.id);
-                }
+            // Only skip sounds for notifications older than 1 minute on initial load
+            const oneMinuteAgo = new Date().getTime() - 60000;
+            data.forEach((n) => {
+              if (new Date(n.created_at).getTime() < oneMinuteAgo) {
+                playedSoundsRef.current.add(n.id);
+              }
             });
-
-            if (hasNew) {
-                playNotificationSound();
+            isFirstLoadRef.current = false;
+        }
+        
+        // Play sound for anything not in the set
+        let hasNew = false;
+        data.forEach((notif) => {
+            if (!playedSoundsRef.current.has(notif.id)) {
+                hasNew = true;
+                playedSoundsRef.current.add(notif.id);
             }
+        });
+
+        if (hasNew) {
+            playNotificationSound();
         }
       }
     }
@@ -103,7 +110,7 @@ export function NotificationPopups() {
         .on(
           "postgres_changes",
           {
-            event: "*",
+            event: "INSERT", // Explicitly listen for inserts for faster response
             schema: "public",
             table: "notifications",
             filter: `user_id=eq.${user.id}`,
@@ -114,7 +121,7 @@ export function NotificationPopups() {
         )
         .subscribe();
       
-      intervalId = setInterval(fetchNotifications, 60000);
+      intervalId = setInterval(fetchNotifications, 30000); // 30s polling
     }
 
     setupSubscription();

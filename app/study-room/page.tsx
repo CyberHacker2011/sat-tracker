@@ -229,7 +229,10 @@ function StudyRoomContent() {
         const h = Math.floor(s / 3600);
         const m = Math.floor((s % 3600) / 60);
         const sec = s % 60;
-        return `${h > 0 ? h + ":" : ""}${m}:${sec < 10 ? "0" : ""}${sec}`;
+        if (h > 0) {
+            return `${h}:${m < 10 ? "0" : ""}${m}:${sec < 10 ? "0" : ""}${sec}`;
+        }
+        return `${m}:${sec < 10 ? "0" : ""}${sec}`;
     };
 
     if (loading) return (
@@ -344,7 +347,7 @@ function StudyRoomContent() {
                             <div className="grid grid-cols-2 gap-8">
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">Work (m)</label>
-                                    <input type="number" value={focusMinutes} onChange={e => setFocusMinutes(Math.max(1, parseInt(e.target.value) || 1))} className="w-full bg-slate-800 border-none rounded-2xl p-6 text-3xl font-black focus:ring-4 focus:ring-amber-500/20" />
+                                    <input type="number" value={focusMinutes} onChange={e => setFocusMinutes(Math.min(720, Math.max(1, parseInt(e.target.value) || 1)))} className="w-full bg-slate-800 border-none rounded-2xl p-6 text-3xl font-black focus:ring-4 focus:ring-amber-500/20" />
                                 </div>
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest px-2">Rest (m)</label>
@@ -429,7 +432,7 @@ function StudyRoomContent() {
                         <p className={`text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-4 ${isRunning ? "animate-pulse" : ""}`}>
                             {mode === "focus" ? "Studying Now" : mode === "break" ? "Rest Period" : "Paused"}
                         </p>
-                        <h2 className="text-7xl md:text-9xl font-black text-slate-900 tabular-nums tracking-tighter leading-none mb-6">{formatTime(timeLeft)}</h2>
+                        <h2 className={`font-black text-slate-900 tabular-nums tracking-tighter leading-none mb-6 transition-all ${timeLeft >= 3600 ? 'text-5xl md:text-7xl' : 'text-7xl md:text-9xl'}`}>{formatTime(timeLeft)}</h2>
                         <div className="px-4 py-1.5 bg-slate-50 border border-slate-100 rounded-full inline-block">
                             <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Piece {currentSession} of {totalSessions}</span>
                         </div>
