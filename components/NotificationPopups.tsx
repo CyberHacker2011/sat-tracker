@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
+import Link from "next/link";
 
 type Notification = {
   id: string;
@@ -38,7 +39,6 @@ export function NotificationPopups() {
       oscillator.start(audioContext.currentTime);
       oscillator.stop(audioContext.currentTime + 0.3);
     } catch (error) {
-      // Fallback: silent if audio context fails
       console.error("Error playing notification sound:", error);
     }
   }
@@ -51,9 +51,8 @@ export function NotificationPopups() {
     async function fetchNotifications() {
       if (!mounted) return;
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: authData } = await supabase.auth.getUser();
+      const user = authData?.user;
 
       if (!user) return;
 
@@ -72,7 +71,6 @@ export function NotificationPopups() {
       if (data && mounted) {
         setNotifications(data as Notification[]);
 
-        // Play sound logic
         if (isFirstLoadRef.current) {
             data.forEach((n) => playedSoundsRef.current.add(n.id));
             isFirstLoadRef.current = false;
@@ -93,15 +91,13 @@ export function NotificationPopups() {
     }
 
     async function setupSubscription() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: authData } = await supabase.auth.getUser();
+      const user = authData?.user;
 
       if (!user || !mounted) return;
 
       await fetchNotifications();
 
-      // Set up real-time subscription
       channel = supabase
         .channel(`notifications-popups:${user.id}`)
         .on(
@@ -113,15 +109,11 @@ export function NotificationPopups() {
             filter: `user_id=eq.${user.id}`,
           },
           (payload) => {
-            console.log('[NotificationPopups] Realtime event received:', payload);
             fetchNotifications();
           }
         )
-        .subscribe((status) => {
-          console.log('[NotificationPopups] Subscription status:', status);
-        });
+        .subscribe();
       
-      // Reduced polling as fallback (60 seconds)
       intervalId = setInterval(fetchNotifications, 60000);
     }
 
@@ -139,20 +131,17 @@ export function NotificationPopups() {
   }, [supabase]);
 
   async function handleDismiss(notificationId: string) {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData?.user;
 
     if (!user) return;
 
-    // Optimistic UI update - instant feedback
     const dismissedAt = new Date().toISOString();
     setVisibleNotifications((prev) => prev.filter((n) => n.id !== notificationId));
     setNotifications((prev) =>
       prev.map((n) => (n.id === notificationId ? { ...n, dismissed_at: dismissedAt } : n))
     );
 
-    // Update database - Realtime will propagate to other components
     const { error } = await supabase
       .from("notifications")
       .update({ dismissed_at: dismissedAt })
@@ -160,31 +149,24 @@ export function NotificationPopups() {
       .eq("user_id", user.id);
 
     if (error) {
-      console.error("[NotificationPopups] Error dismissing:", error);
-      // Revert optimistic update on error
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === notificationId ? { ...n, dismissed_at: null } : n))
-      );
+      console.error("Error dismissing notification:", error);
     }
   }
 
   async function handleDismissAll() {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData?.user;
 
     if (!user) return;
 
     const notificationIds = visibleNotifications.map((n) => n.id);
     const dismissedAt = new Date().toISOString();
 
-    // Optimistic update - instant feedback
     setVisibleNotifications([]);
     setNotifications((prev) =>
       prev.map((n) => (notificationIds.includes(n.id) ? { ...n, dismissed_at: dismissedAt } : n))
     );
 
-    // Update database - Realtime will propagate
     const { error } = await supabase
       .from("notifications")
       .update({ dismissed_at: dismissedAt })
@@ -192,18 +174,13 @@ export function NotificationPopups() {
       .eq("user_id", user.id);
 
     if (error) {
-      console.error("[NotificationPopups] Error dismissing all:", error);
-      // Revert optimistic update on error
-      setNotifications((prev) =>
-        prev.map((n) => (notificationIds.includes(n.id) ? { ...n, dismissed_at: null } : n))
-      );
+      console.error("Error dismissing all notifications:", error);
     }
   }
 
-  // Limit visible notifications: 2 for mobile, 3 for desktop
   useEffect(() => {
     const updateVisibleNotifications = () => {
-      const isMobile = window.innerWidth < 1024; // lg breakpoint
+      const isMobile = window.innerWidth < 1024;
       const maxVisible = isMobile ? 2 : 3;
 
       const undismissed = notifications.filter((n) => !n.dismissed_at);
@@ -218,67 +195,65 @@ export function NotificationPopups() {
   if (visibleNotifications.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 w-80 max-w-[calc(100vw-2rem)]">
-      {/* Dismiss All Button */}
+    <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-3 w-80 max-w-[calc(100vw-2rem)]">
       <button
         onClick={handleDismissAll}
-        className="bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-lg transition-colors self-end"
+        className="bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-xl shadow-lg transition-all self-end active:scale-95"
       >
-        Dismiss All
+        Clear All
       </button>
 
-      {/* Notifications */}
       {visibleNotifications.map((notification, index) => {
-          // Check if notification is "new" (created < 5 mins ago)
           const isNew = new Date().getTime() - new Date(notification.created_at).getTime() < 5 * 60 * 1000;
+          const planMatch = notification.message.match(/{{planId:(.*?)}}/);
+          const planId = planMatch?.[1];
+          const cleanMessage = notification.message.replace(/{{planId:.*?}}/g, "").trim();
           
           return (
             <div
-            key={notification.id}
-            className="bg-white rounded-lg shadow-lg ring-1 ring-gray-200 p-3 transform transition-all duration-300 ease-out relative overflow-hidden"
-            style={{
-                animation: `slideUp 0.3s ease-out ${index * 50}ms both`,
-            }}
+              key={notification.id}
+              className="bg-white rounded-2xl shadow-xl p-5 border border-gray-100 relative overflow-hidden group animate-in slide-in-from-right-full"
             >
-            {isNew && (
-                <div className="absolute top-0 left-0 w-1 h-full bg-amber-500" />
-            )}
-            <div className="flex items-start justify-between gap-2 pl-2">
+              <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
                     {isNew && (
-                        <span className="inline-flex items-center rounded-sm bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-800 mb-1">
-                            New
-                        </span>
+                      <span className="bg-amber-500 text-white px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-full">
+                        New
+                      </span>
                     )}
-                    <p className="text-xs text-gray-900 leading-relaxed">{notification.message}</p>
+                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                       {new Date(notification.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                  
+                  <p className="text-xs font-bold text-gray-700 leading-relaxed mb-4">
+                    {cleanMessage}
+                  </p>
+
+                  {planId && (
+                      <Link
+                        href={`/study-room?planId=${planId}`}
+                        onClick={() => handleDismiss(notification.id)}
+                        className="bg-amber-50 text-amber-600 hover:bg-amber-500 hover:text-white px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all mb-1 inline-block"
+                      >
+                        Enter Study Room
+                      </Link>
+                  )}
                 </div>
+                
                 <button
-                onClick={() => handleDismiss(notification.id)}
-                className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
-                aria-label="Dismiss notification"
+                  onClick={() => handleDismiss(notification.id)}
+                  className="text-gray-300 hover:text-amber-500 transition-colors"
                 >
-                <svg
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth="2"
-                    stroke="currentColor"
-                >
-                    <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                    />
-                </svg>
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
-            </div>
-            <p className="text-[10px] text-gray-500 mt-1.5 pl-2">
-                {new Date(notification.created_at).toLocaleString()}
-            </p>
+              </div>
             </div>
           );
       })}
     </div>
   );
 }
-

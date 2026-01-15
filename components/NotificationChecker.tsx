@@ -94,9 +94,9 @@ export function NotificationChecker() {
                             if (!sentPlanStartNotifications.current.has(plan.id)) {
                                 // Determine message based on whether it started or is about to start
                                 const isLate = now >= startDateTime;
-                                const message = isLate 
+                                const message = (isLate 
                                     ? `Your ${plan.section} plan has started (at ${plan.start_time}).`
-                                    : `Your ${plan.section} plan is starting in 1 minute (at ${plan.start_time}).`;
+                                    : `Your ${plan.section} plan is starting in 1 minute (at ${plan.start_time}).`) + ` {{planId:${plan.id}}}`;
                                 
                                 // Optimistically mark as sent
                                 sentPlanStartNotifications.current.add(plan.id);
@@ -124,7 +124,7 @@ export function NotificationChecker() {
                         // 2. Missed Check-in Notification (after end time)
                         if (isTimeForMissed && !hasLog) {
                              if (!sentPlanMissedNotifications.current.has(plan.id)) {
-                                const message = `Your ${plan.section} plan ending at ${plan.end_time} has no check-in.`;
+                                const message = `Your ${plan.section} plan ending at ${plan.end_time} has no check-in. {{planId:${plan.id}}}`;
                                 
                                 sentPlanMissedNotifications.current.add(plan.id);
 

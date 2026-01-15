@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
 
               // Only notify about start if we're past start but before end
               if (startTimePassed && !endTimePassed && !hasLog) {
-                const message = `Your ${plan.section} plan is starting at ${plan.start_time}.`;
+                const message = `Your ${plan.section} plan is starting at ${plan.start_time}. {{planId:${plan.id}}}`;
 
                 // Check if notification already exists for this plan today
                 const { data: existingStartNotif } = await supabase
@@ -219,7 +219,7 @@ export async function POST(request: NextRequest) {
                       const emailSent = await sendEmail(
                         user.email || "",
                         "SAT Plan Starting",
-                        message
+                        message.replace(/{{planId:.*?}}/g, "")
                       );
                       if (emailSent) emailsSent++;
                     }

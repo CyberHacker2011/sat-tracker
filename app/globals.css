@@ -2,26 +2,52 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #111827;
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, -apple-system;
+}
+
+/* Force pure white background on all root levels to eliminate black bleed */
+html, body, #__next {
+  background-color: #ffffff !important;
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure any potential dark mode media queries from tailwind are overridden */
+@media (prefers-color-scheme: dark) {
+  html, body {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Darker placeholders for better visibility as requested */
+::placeholder {
+  color: #6b7280 !important; /* gray-500 */
+  opacity: 1 !important;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
+input::placeholder, 
+textarea::placeholder,
+[placeholder],
+.placeholder-gray-400 {
+  color: #4b5563 !important; /* gray-600 - noticeably darker */
+  opacity: 1 !important;
+}
+
+/* Generic styling for premium feel but staying light */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 158, 11, 0.1);
 }
 
 @keyframes slideUp {

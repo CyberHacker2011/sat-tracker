@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Outfit } from "next/font/google";
 import "./globals.css";
 import { UserActivityTracker } from "@/components/UserActivityTracker";
 import { NotificationPopups } from "@/components/NotificationPopups";
@@ -9,14 +9,9 @@ import { Navbar } from "@/components/Navbar";
 import { FeedbackPopup } from "@/components/FeedbackPopup";
 import { AuthRedirectToast } from "@/components/AuthRedirectToast";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const outfit = Outfit({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-outfit",
 });
 
 export const metadata: Metadata = {
@@ -110,10 +105,10 @@ export default function RootLayout({
         <meta name="theme-color" content="#d97706" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900`}
+        className={`${outfit.variable} antialiased font-sans`}
       >
         <Navbar />
-        <main className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-white to-amber-50">
+        <main className="min-h-[calc(100vh-64px)]">
           {children}
         </main>
         <UserActivityTracker />

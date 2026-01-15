@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
+import Link from "next/link";
 
 type Notification = {
   id: string;
@@ -17,19 +18,17 @@ export default function NotificationsPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let mounted = true;
-    let channel: ReturnType<typeof supabase.channel> | null = null;
-
-    async function fetchNotifications() {
-      if (!mounted) return;
+    async function loadNotifications() {
+      setLoading(true);
+      setError(null);
 
       try {
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser();
+        const { data: authData, error: userError } = await supabase.auth.getUser();
+        const user = authData?.user;
 
-        if (userError || !user) return;
+        if (userError || !user) {
+          throw userError ?? new Error("You must be signed in to view notifications.");
+        }
 
         const { data, error: fetchError } = await supabase
           .from("notifications")
@@ -38,193 +37,116 @@ export default function NotificationsPage() {
           .order("created_at", { ascending: false });
 
         if (fetchError) throw fetchError;
-
-        if (mounted) {
-          setNotifications((data as Notification[]) || []);
-          setLoading(false);
-        }
+        setNotifications(data as Notification[]);
       } catch (err) {
-        if (mounted) {
-          setError(err instanceof Error ? err.message : "Failed to load notifications.");
-          setLoading(false);
-        }
+        setError(err instanceof Error ? err.message : "Failed to load notifications.");
+      } finally {
+        setLoading(false);
       }
     }
 
-    async function setupSubscription() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    loadNotifications();
 
-      if (!user || !mounted) return;
-
-      // Initial fetch
-      fetchNotifications();
-
-      channel = supabase
-        .channel(`notifications-page:${user.id}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "notifications",
-            filter: `user_id=eq.${user.id}`,
-          },
-          (payload) => {
-            console.log('[NotificationsPage] Realtime event received:', payload);
-            fetchNotifications();
-          }
-        )
-        .subscribe((status) => {
-          console.log('[NotificationsPage] Subscription status:', status);
-        });
-    }
-
-    setupSubscription();
+    // Subscribe to changes
+    const channel = supabase
+      .channel("notifications-page")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "notifications" },
+        () => loadNotifications()
+      )
+      .subscribe();
 
     return () => {
-      mounted = false;
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
+      supabase.removeChannel(channel);
     };
   }, [supabase]);
 
-  async function handleDismiss(notificationId: string) {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) return;
-
-    const { error } = await supabase
-      .from("notifications")
-      .update({ dismissed_at: new Date().toISOString() })
-      .eq("id", notificationId)
-      .eq("user_id", user.id);
-
-    if (error) {
-      setError(error.message);
-      return;
+  async function handleDismiss(id: string) {
+    try {
+      const { error: updateError } = await supabase
+        .from("notifications")
+        .update({ dismissed_at: new Date().toISOString() })
+        .eq("id", id);
+      if (updateError) throw updateError;
+      setNotifications((prev) => 
+        prev.map(n => n.id === id ? { ...n, dismissed_at: new Date().toISOString() } : n)
+      );
+    } catch (err) {
+      console.error("Error dismissing notification:", err);
     }
-
-    setNotifications((prev) =>
-      prev.map((n) =>
-        n.id === notificationId ? { ...n, dismissed_at: new Date().toISOString() } : n
-      )
-    );
   }
 
-  const activeNotifications = notifications.filter((n) => !n.dismissed_at);
-  const dismissedNotifications = notifications.filter((n) => n.dismissed_at);
+  const activeNotifications = notifications.filter(n => !n.dismissed_at);
+  const pastNotifications = notifications.filter(n => !!n.dismissed_at);
+
+  if (loading) {
+      return (
+          <div className="flex min-h-[calc(100vh-64px)] items-center justify-center bg-white">
+              <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+      );
+  }
 
   return (
-    <div className="mx-auto max-w-6xl p-3 md:p-5">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-          Notifications
+    <div className="mx-auto max-w-5xl p-6 lg:p-10 bg-white min-h-screen">
+      <div className="mb-12 border-b border-gray-100 pb-10">
+        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+          Notification <span className="text-amber-500">Center</span>
         </h1>
-        <p className="mt-4 text-lg leading-8 text-gray-600">
-          View all your notifications. Active notifications appear in-app as popups.
+        <p className="mt-2 text-lg font-medium text-gray-400">
+          Stay updated with your study schedule and achievements.
         </p>
       </div>
 
       {error && (
-        <div className="mb-6 rounded-lg bg-red-50 p-4">
-          <p className="text-sm font-medium text-red-800" role="alert">
-            {error}
-          </p>
+        <div className="mb-8 p-4 rounded-xl bg-red-50 border border-red-100 text-red-600 font-bold text-sm">
+          {error}
         </div>
       )}
 
-      {loading ? (
-        <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200 text-center">
-          <p className="text-sm text-gray-600">Loading notifications…</p>
-        </div>
-      ) : notifications.length === 0 ? (
-        <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-200 text-center">
-          <p className="text-sm text-gray-600">No notifications yet.</p>
+      {notifications.length === 0 ? (
+        <div className="text-center py-20 bg-gray-50 rounded-3xl border border-gray-100">
+          <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-gray-200 shadow-sm">
+              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 mb-1">No notifications yet</h3>
+          <p className="text-sm font-medium text-gray-400">We'll alert you when it's time to study.</p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-12">
           {/* Active Notifications */}
           {activeNotifications.length > 0 && (
-            <div className="rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 overflow-hidden">
-              <div className="bg-amber-50 px-6 py-4 border-b border-amber-200">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Active ({activeNotifications.length})
-                </h2>
-              </div>
-              <div className="divide-y divide-gray-200">
+            <div className="space-y-6">
+              <h2 className="text-xs font-bold text-gray-400 uppercase tracking-[0.3em] px-2 flex items-center gap-3">
+                  <span className="w-2 h-2 rounded-full bg-amber-500" />
+                  New Updates
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {activeNotifications.map((notification) => (
-                  <div
+                  <PageNotificationItem
                     key={notification.id}
-                    className="px-6 py-4 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-900">{notification.message}</p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {new Date(notification.created_at).toLocaleString()}
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => handleDismiss(notification.id)}
-                        className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
-                        aria-label="Dismiss notification"
-                      >
-                        <svg
-                          className="h-5 w-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth="2"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
+                    notification={notification}
+                    isActive={true}
+                    onDismiss={() => handleDismiss(notification.id)}
+                  />
                 ))}
               </div>
             </div>
           )}
 
-          {/* Dismissed Notifications */}
-          {dismissedNotifications.length > 0 && (
-            <div className="rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 overflow-hidden">
-              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Dismissed ({dismissedNotifications.length})
-                </h2>
-              </div>
-              <div className="divide-y divide-gray-200">
-                {dismissedNotifications.map((notification) => (
-                  <div
+          {/* Past Notifications */}
+          {pastNotifications.length > 0 && (
+            <div className="space-y-6">
+              <h2 className="text-xs font-bold text-gray-400 uppercase tracking-[0.3em] px-2">History</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {pastNotifications.map((notification) => (
+                  <PageNotificationItem
                     key={notification.id}
-                    className="px-6 py-4 opacity-60"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-900">{notification.message}</p>
-                        <div className="flex gap-4 mt-1">
-                          <p className="text-xs text-gray-500">
-                            Created: {new Date(notification.created_at).toLocaleString()}
-                          </p>
-                          {notification.dismissed_at && (
-                            <p className="text-xs text-gray-500">
-                              Dismissed: {new Date(notification.dismissed_at).toLocaleString()}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                    notification={notification}
+                    isActive={false}
+                    onDismiss={() => {}}
+                  />
                 ))}
               </div>
             </div>
@@ -235,3 +157,62 @@ export default function NotificationsPage() {
   );
 }
 
+function PageNotificationItem({ notification, isActive, onDismiss }: any) {
+  const [expanded, setExpanded] = useState(false);
+  
+  // Extract planId if present in message {{planId:xxx}}
+  const planMatch = notification.message.match(/{{planId:(.*?)}}/);
+  const planId = planMatch?.[1];
+  const cleanMessage = notification.message.replace(/{{planId:.*?}}/g, "").trim();
+  const isLong = cleanMessage.length > 100;
+
+  return (
+    <div
+      className={`relative group flex flex-col p-6 rounded-3xl transition-all border ${
+        isActive
+          ? 'bg-white border-amber-100 shadow-sm hover:shadow-md'
+          : 'bg-gray-50/50 border-transparent opacity-60'
+      }`}
+    >
+      <div className="flex-1">
+        <div className="flex items-center justify-between mb-3">
+             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                {new Date(notification.created_at).toLocaleDateString()} at {new Date(notification.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </span>
+            {isActive && (
+                <button
+                    onClick={onDismiss}
+                    className="text-gray-300 hover:text-amber-500 transition-colors"
+                >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            )}
+        </div>
+        
+        <p className={`text-sm font-bold text-gray-700 leading-relaxed ${!expanded && isLong ? 'line-clamp-2' : ''}`}>
+          {cleanMessage}
+        </p>
+
+        {isLong && (
+            <button
+                onClick={() => setExpanded(!expanded)}
+                className="mt-2 text-[10px] font-bold text-amber-600 hover:underline uppercase tracking-tight"
+            >
+                {expanded ? "Show Less" : "Show Full Content"}
+            </button>
+        )}
+      </div>
+
+      {isActive && planId && (
+        <div className="mt-6">
+            <Link
+                href={`/focus?planId=${planId}`}
+                className="inline-flex items-center justify-center w-full bg-amber-500 text-white text-[10px] font-bold py-3 rounded-xl uppercase tracking-widest hover:bg-amber-600 transition-all shadow-md shadow-amber-500/10 active:scale-95"
+            >
+                Open Study Timer
+            </Link>
+        </div>
+      )}
+    </div>
+  );
+}
