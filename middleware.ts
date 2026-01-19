@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-const PUBLIC_PATHS = ["/", "/login", "/_next", "/favicon.ico", "/api"];
+const PUBLIC_PATHS = ["/", "/login", "/_next", "/favicon.ico", "/api", "/focus"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -34,12 +34,13 @@ export async function middleware(req: NextRequest) {
     }
   );
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (pathname === "/" && session) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+  let session = null;
+  try {
+    const { data } = await supabase.auth.getSession();
+    session = data.session;
+  } catch (error) {
+    // console.error("Middleware auth error:", error);
+    // Treat as unauthenticated if session check fails
   }
 
   // Redirect signed-in users trying to access login page

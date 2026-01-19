@@ -1,6 +1,20 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
+
+function playSound(freq: number, dur: number) {
+    try {
+        const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        const ctx = new AudioContextClass();
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.connect(g); g.connect(ctx.destination);
+        osc.frequency.value = freq;
+        g.gain.setValueAtTime(0.2, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+        osc.start(); osc.stop(ctx.currentTime + dur);
+    } catch {}
+}
 
 export default function PomodoroPage() {
     // --- State ---
@@ -16,6 +30,19 @@ export default function PomodoroPage() {
     const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     // --- Timer Logic (Precisely handles background/throttling) ---
+
+    const handleTransition = useCallback(() => {
+        if (mode === "focus") {
+            setMode("break");
+            setTimeLeft(breakMinutes * 60);
+            playSound(1000, 0.4);
+        } else {
+            setMode("focus");
+            setTimeLeft(focusMinutes * 60);
+            playSound(1000, 0.4);
+        }
+    }, [mode, breakMinutes, focusMinutes]);
+
     useEffect(() => {
         const handleUnload = (e: BeforeUnloadEvent) => {
             if (isRunning && timeLeft > 0) {
@@ -38,39 +65,25 @@ export default function PomodoroPage() {
                 }
             }, 100);
         } else if (timeLeft === 0 && isRunning) {
-            handleTransition();
+            // Fix synchronous setState call in effect by deferring it
+            const t = setTimeout(() => {
+                handleTransition();
+            }, 0);
+            return () => clearTimeout(t);
         }
 
         return () => {
             if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
             window.removeEventListener("beforeunload", handleUnload);
         };
-    }, [isRunning, timeLeft === 0]);
+    }, [isRunning, timeLeft, handleTransition]);
 
-    const handleTransition = () => {
-        if (mode === "focus") {
-            setMode("break");
-            setTimeLeft(breakMinutes * 60);
-            playSound(1000, 0.4);
-        } else {
-            setMode("focus");
-            setTimeLeft(focusMinutes * 60);
-            playSound(1000, 0.4);
-        }
-    };
+    // Moved playSound outside or defined before usage, but easiest is to hoist it or define it statically.
+    // However, since we are inside a functional component, we can define it before handleTransition/useEffect if we want it strictly local,
+    // or just use the global one I will define below.
+    // For this edit, I will define it inside but before handleTransition, or better, keep it simple and just rely on hoisting if I use function keyword?
+    // Const functions don't hoist. I will define it OUTSIDE the component in the next block.
 
-    function playSound(freq: number, dur: number) {
-        try {
-            const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const g = ctx.createGain();
-            osc.connect(g); g.connect(ctx.destination);
-            osc.frequency.value = freq;
-            g.gain.setValueAtTime(0.2, ctx.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
-            osc.start(); osc.stop(ctx.currentTime + dur);
-        } catch {}
-    }
 
     const formatTime = (s: number) => {
         const h = Math.floor(s / 3600);
@@ -117,7 +130,7 @@ export default function PomodoroPage() {
                         <p className={`text-[10px] font-black uppercase tracking-[0.4em] mb-4 ${mode === "focus" ? "text-amber-500" : mode === "break" ? "text-emerald-500" : "text-slate-300"}`}>
                             {mode === "idle" ? "Ready" : mode === "focus" ? "Deep Work" : "Resting"}
                         </p>
-                        <h2 className={`font-black text-slate-900 tabular-nums tracking-tighter leading-none transition-all ${timeLeft >= 3600 ? 'text-5xl md:text-7xl' : 'text-7xl md:text-9xl'}`}>{formatTime(timeLeft)}</h2>
+                        <h2 className={`font-condensed font-black text-slate-900 tabular-nums tracking-tighter leading-none transition-all ${timeLeft >= 3600 ? 'text-5xl md:text-7xl' : 'text-7xl md:text-9xl'}`}>{formatTime(timeLeft)}</h2>
                     </div>
                 </div>
 
@@ -151,7 +164,7 @@ export default function PomodoroPage() {
                                     const v = Math.min(720, Math.max(1, parseInt(e.target.value) || 1));
                                     setFocusMinutes(v);
                                     if (mode === "idle" || mode === "focus") setTimeLeft(v * 60);
-                                }} className="w-16 bg-transparent text-center text-3xl font-black text-slate-800 focus:outline-none" />
+                                }} className="w-16 bg-transparent text-center text-3xl font-condensed font-black text-slate-800 focus:outline-none" />
                             </div>
                             <div className="w-px h-10 bg-slate-200 self-center" />
                             <div className="text-center group">
@@ -160,7 +173,7 @@ export default function PomodoroPage() {
                                     const v = Math.max(1, parseInt(e.target.value) || 1);
                                     setBreakMinutes(v);
                                     if (mode === "break") setTimeLeft(v * 60);
-                                }} className="w-16 bg-transparent text-center text-3xl font-black text-slate-800 focus:outline-none" />
+                                }} className="w-16 bg-transparent text-center text-3xl font-condensed font-black text-slate-800 focus:outline-none" />
                             </div>
                         </div>
                     )}

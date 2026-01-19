@@ -115,7 +115,7 @@ export function NotificationPopups() {
             table: "notifications",
             filter: `user_id=eq.${user.id}`,
           },
-          (payload) => {
+          () => {
             fetchNotifications();
           }
         )
@@ -210,7 +210,7 @@ export function NotificationPopups() {
         Clear All
       </button>
 
-      {visibleNotifications.map((notification, index) => {
+      {visibleNotifications.map((notification) => {
           const isNew = new Date().getTime() - new Date(notification.created_at).getTime() < 5 * 60 * 1000;
           const planMatch = notification.message.match(/{{planId:(.*?)}}/);
           const planId = planMatch?.[1];

@@ -15,7 +15,6 @@ function LoginContent() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [checkEmail, setCheckEmail] = useState(false);
 
   const redirectTo = searchParams.get("redirectedFrom") || "/dashboard";
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
@@ -62,56 +61,14 @@ function LoginContent() {
           password,
         });
         if (signUpError) throw signUpError;
-        setCheckEmail(true);
+        // Proceed to dashboard immediately since email confirmation is disabled
+        router.push(redirectTo);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Authentication failed");
     } finally {
       setLoading(false);
     }
-  }
-
-  if (checkEmail) {
-    return (
-      <div className="flex min-h-[calc(100vh-64px)] items-center justify-center px-6 py-12 bg-white">
-        <div className="w-full max-w-md">
-          <div className="rounded-3xl bg-white p-10 shadow-xl border border-gray-100 text-center">
-            <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-50">
-              <svg
-                className="h-8 w-8 text-amber-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="2"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-                />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold tracking-tight text-gray-900 mb-4">
-              Check your email
-            </h2>
-            <p className="text-gray-600 mb-8 font-medium">
-              We&apos;ve sent a verification link to <span className="font-bold text-gray-900">{email}</span>.
-              <br />
-              Please check your inbox to confirm your account.
-            </p>
-            <button
-              onClick={() => {
-                setCheckEmail(false);
-                setMode("sign-in");
-              }}
-              className="font-bold text-amber-500 hover:text-amber-600 text-sm flex items-center justify-center gap-1 mx-auto"
-            >
-              ← Back to sign in
-            </button>
-          </div>
-        </div>
-      </div>
-    );
   }
 
   return (
@@ -125,14 +82,16 @@ function LoginContent() {
         ) : (
           <div className="rounded-3xl bg-white p-10 shadow-xl border border-gray-100">
             <div className="mb-10 text-center">
-              <div className="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center text-white font-bold text-xl mx-auto mb-6 shadow-md shadow-amber-500/20">S</div>
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-xl mx-auto mb-6 shadow-md ${mode === "sign-in" ? "bg-amber-500 shadow-amber-500/20" : "bg-emerald-500 shadow-emerald-500/20"}`}>
+                {mode === "sign-in" ? "S" : "!"}
+              </div>
               <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
-                {mode === "sign-in" ? "Welcome Back" : "Create Account"}
+                {mode === "sign-in" ? "Welcome Back" : "Start Your Journey"}
               </h1>
               <p className="mt-2 text-sm font-medium text-gray-500">
                 {mode === "sign-in"
                   ? "Sign in to access your SAT study plans"
-                  : "Start organizing your SAT preparation today"}
+                  : "Begin your organized SAT preparation today"}
               </p>
             </div>
 
@@ -187,7 +146,7 @@ function LoginContent() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-amber-500 text-white py-4 rounded-xl text-sm font-bold hover:bg-amber-600 transition-all shadow-lg shadow-amber-500/20 active:scale-95 disabled:opacity-50"
+                className={`w-full text-white py-4 rounded-xl text-sm font-bold transition-all shadow-lg active:scale-95 disabled:opacity-50 ${mode === "sign-in" ? "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20" : "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20"}`}
               >
                 {loading
                   ? mode === "sign-in"
@@ -195,7 +154,7 @@ function LoginContent() {
                     : "Creating Account..."
                   : mode === "sign-in"
                     ? "Sign In"
-                    : "Create Account"}
+                    : "Join for Free"}
               </button>
             </form>
 

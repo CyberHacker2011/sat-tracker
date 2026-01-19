@@ -1,18 +1,14 @@
+
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Outfit } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { UserActivityTracker } from "@/components/UserActivityTracker";
 import { NotificationPopups } from "@/components/NotificationPopups";
 import { NotificationChecker } from "@/components/NotificationChecker";
 import { Navbar } from "@/components/Navbar";
 import { FeedbackPopup } from "@/components/FeedbackPopup";
 import { AuthRedirectToast } from "@/components/AuthRedirectToast";
-
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-outfit",
-});
 
 export const metadata: Metadata = {
   title: "SAT Tracker - Boost Your SAT Study Productivity | Daily Study Planner",
@@ -48,6 +44,9 @@ export const metadata: Metadata = {
     "academic planning",
     "test preparation tool",
     "SAT exam prep",
+    "SAT Math",
+    "SAT Reading",
+    "SAT Writing"
   ],
   authors: [{ name: "SAT Tracker" }],
   creator: "SAT Tracker",
@@ -66,7 +65,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "SAT Tracker - Boost Your SAT Study Productivity",
     description: "Plan your daily SAT study sessions, track progress, and build consistent study habits. Increase your SAT preparation productivity with our intuitive platform.",
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://sat-tracker.vercel.app",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://satracker.uz",
     siteName: "SAT Tracker",
     locale: "en_US",
     type: "website",
@@ -100,24 +99,35 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#d97706" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
       </head>
       <body
-        className={`${outfit.variable} antialiased font-sans`}
+        className="antialiased font-sans"
       >
-        <Navbar />
-        <main className="min-h-[calc(100vh-64px)]">
-          {children}
-        </main>
-        <UserActivityTracker />
-        <NotificationChecker />
-        <NotificationPopups />
-        <FeedbackPopup />
-        <Suspense fallback={null}>
-          <AuthRedirectToast />
-        </Suspense>
+        <ThemeProvider
+          attribute="data-theme"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+          themes={["light", "dark", "blue"]}
+        >
+          <Navbar />
+          <main className="min-h-[calc(100vh-64px)]">
+            {children}
+          </main>
+          <UserActivityTracker />
+          <NotificationChecker />
+          <NotificationPopups />
+          <FeedbackPopup />
+          <Suspense fallback={null}>
+            <AuthRedirectToast />
+          </Suspense>
+        </ThemeProvider>
       </body>
     </html>
   );

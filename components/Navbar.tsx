@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -125,7 +126,7 @@ export function Navbar() {
   async function handleSignOut() {
     await supabase.auth.signOut();
     setIsOpen(false);
-    router.push("/");
+    router.push("/login");
     router.refresh();
   }
 
@@ -137,7 +138,10 @@ export function Navbar() {
   }
 
   const navLinks: NavLink[] = [
-    { href: isAuthenticated ? "/dashboard" : "/", label: "Home" },
+    ...(isAuthenticated 
+      ? [{ href: "/dashboard", label: "Dashboard" }] 
+      : [{ href: "/", label: "Home" }]
+    ),
     { href: "/study-room", label: "Study Room", requiresAuth: true },
     { href: "/focus", label: "Pomodoro" },
     { href: "/plan", label: "Plan", requiresAuth: true },
@@ -149,12 +153,12 @@ export function Navbar() {
   const filteredNavLinks = navLinks.filter(link => !link.requiresAuth || isAuthenticated);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-orange-100 bg-white shadow-sm">
+    <header className="sticky top-0 z-50 border-b border-default bg-nav shadow-sm">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8" aria-label="Global">
         <div className="flex items-center">
           <Link href={isAuthenticated ? "/dashboard" : "/"} className="group flex items-center gap-2">
-            <div className="w-8 h-8 bg-amber-500 rounded-xl flex items-center justify-center text-white font-bold shadow-md group-hover:scale-110 transition-transform">S</div>
-            <span className="text-xl font-bold tracking-tight text-gray-900 group-hover:text-amber-500 transition-colors">
+            <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center text-white font-bold shadow-md group-hover:scale-110 transition-transform">S</div>
+            <span className="text-xl font-bold tracking-tight text-primary group-hover:text-primary-dark transition-colors">
               SAT TRACKER
             </span>
           </Link>
@@ -237,6 +241,9 @@ export function Navbar() {
                 Sign in
               </Link>
             )}
+            
+            <div className="mx-4 h-6 w-px bg-gray-200 lg:mx-6" aria-hidden="true" />
+            <ThemeToggle />
           </div>
         </div>
 
@@ -291,11 +298,11 @@ export function Navbar() {
       {isOpen && (
         <div className="lg:hidden" role="dialog" aria-modal="true">
           <div className="fixed inset-0 z-50 bg-gray-500/20 backdrop-blur-sm" onClick={() => setIsOpen(false)}></div>
-          <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm border-l border-gray-100">
+          <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-card px-6 py-6 sm:max-w-sm border-l border-default">
             <div className="flex items-center justify-between mb-8">
               <Link href="/" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
-                <div className="w-8 h-8 bg-amber-500 rounded-xl flex items-center justify-center text-white font-bold">S</div>
-                <span className="text-xl font-bold text-gray-900">SAT Tracker</span>
+                <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center text-white font-bold">S</div>
+                <span className="text-xl font-bold text-primary">SAT Tracker</span>
               </Link>
               <button
                 type="button"
@@ -336,8 +343,8 @@ export function Navbar() {
                         href={link.href}
                         onClick={() => setIsOpen(false)}
                         className={`block px-3 py-3 text-base font-semibold rounded-lg transition-all ${isActive
-                          ? "bg-amber-500 text-white shadow-md"
-                          : "text-gray-900 hover:bg-gray-50"
+                          ? "bg-primary text-white shadow-md"
+                          : "text-primary hover:bg-background"
                           }`}
                       >
                         {link.label}

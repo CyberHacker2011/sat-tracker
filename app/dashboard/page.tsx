@@ -4,10 +4,26 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 
+type StudyPlan = {
+  id: string;
+  user_id: string;
+  date: string;
+  section: "math" | "reading" | "writing";
+  start_time: string;
+  end_time: string;
+  tasks_text: string;
+};
+
+type DashboardPlan = StudyPlan & {
+  isActive: boolean;
+  isPast: boolean;
+  isMarked: boolean;
+};
+
 export default function DashboardPage() {
   const [userName, setUserName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [todayPlans, setTodayPlans] = useState<any[]>([]);
+  const [todayPlans, setTodayPlans] = useState<DashboardPlan[]>([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -31,7 +47,7 @@ export default function DashboardPage() {
           const currentTimeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
           const logs = logsRes.data || [];
           
-          const processed = plansRes.data.map((plan: any) => {
+          const processed: DashboardPlan[] = plansRes.data.map((plan: StudyPlan) => {
             const log = logs.find(l => l.plan_id === plan.id);
             const isActive = currentTimeStr >= plan.start_time && currentTimeStr <= plan.end_time;
             const isPast = currentTimeStr > plan.end_time;
@@ -79,7 +95,7 @@ export default function DashboardPage() {
             Welcome back, {userName ? <span className="text-amber-500 capitalize">{userName}</span> : "Friend"}
           </h1>
           <p className="mt-2 text-lg font-medium text-gray-500">
-            Let's make today's study session productive.
+            Let&apos;s make today&apos;s study session productive.
           </p>
         </div>
         <div className="flex flex-wrap gap-4">
@@ -99,7 +115,7 @@ export default function DashboardPage() {
             <div className="px-6 py-5 bg-gray-50/50 border-b border-gray-100 flex items-center justify-between">
               <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                 <span className="w-1.5 h-5 bg-amber-500 rounded-full" />
-                Today's Study Schedule
+                Today&apos;s Study Schedule
               </h2>
               <Link href="/check-in" className="text-xs font-bold text-amber-600 hover:text-amber-700">
                 Full Check-in →
@@ -217,7 +233,7 @@ export default function DashboardPage() {
           
           <div className="bg-amber-50 p-6 rounded-3xl border border-amber-100">
             <h3 className="font-bold text-amber-800 text-sm mb-3">Study Tip</h3>
-            <p className="text-xs font-medium text-amber-700 leading-relaxed italic">"The secret of getting ahead is getting started." — Stay consistent with your daily plans to reach your target score.</p>
+            <p className="text-xs font-medium text-amber-700 leading-relaxed italic">&quot;The secret of getting ahead is getting started.&quot; — Stay consistent with your daily plans to reach your target score.</p>
           </div>
         </div>
       </div>

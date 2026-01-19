@@ -57,9 +57,9 @@ export default function ArchivePage() {
                 ...plan,
                 daily_log: logsData.filter(l => l.plan_id === plan.id)
               }));
-              setPlans(enrichedPlans as any[]);
+                setPlans(enrichedPlans as StudyPlan[]);
             } else {
-              setPlans(data as any[]);
+              setPlans(data as StudyPlan[]);
             }
         } else {
           setPlans([]);
@@ -148,7 +148,7 @@ export default function ArchivePage() {
                 const logData = plan.daily_log;
                 const status = Array.isArray(logData) 
                   ? logData[0]?.status 
-                  : (logData as any)?.status;
+                  : (logData as { status?: string })?.status;
                 
                 return (
                   <tr key={plan.id} className="hover:bg-gray-50/50 transition-colors">

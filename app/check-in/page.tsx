@@ -373,7 +373,7 @@ export default function CheckInPage() {
             How it works
         </h3>
         <p className="text-xs font-medium text-amber-700 leading-relaxed mb-4">
-            Sessions become available for check-in after their scheduled start time. Mark your plans as "Completed" if you finished your tasks, or "Missed" if you couldn't make it.
+            Sessions become available for check-in after their scheduled start time. Mark your plans as &quot;Completed&quot; if you finished your tasks, or &quot;Missed&quot; if you couldn&apos;t make it.
         </p>
         <p className="text-xs font-medium text-amber-700 leading-relaxed">
             Consistent check-ins help you track your progress and maintain study accountability over time.

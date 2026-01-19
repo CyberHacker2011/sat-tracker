@@ -1,8 +1,27 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 
 export default function Home() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
+
+  useEffect(() => {
+    async function checkAuth() {
+      const supabase = getSupabaseBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setIsAuthenticated(true);
+        setShowAuthPopup(true);
+      }
+    }
+    checkAuth();
+  }, []);
+
   return (
-    <div className="w-full bg-white overflow-hidden">
+    <div className="w-full bg-white overflow-hidden relative">
       {/* Hero Section */}
       <section className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-32">
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-amber-500/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
@@ -13,7 +32,7 @@ export default function Home() {
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
             <p className="text-xs font-bold text-amber-700 uppercase tracking-widest">Boost Your SAT Productivity</p>
           </div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-6xl md:text-7xl mb-8 leading-tight">
+          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-6xl md:text-7xl mb-8 leading-tight font-heading">
             Plan. Track. <span className="text-amber-500">Succeed.</span>
           </h1>
           <p className="mx-auto max-w-2xl text-lg font-medium text-gray-600 leading-relaxed sm:text-xl">
@@ -21,10 +40,10 @@ export default function Home() {
           </p>
           <div className="mt-12 flex flex-wrap justify-center gap-4">
             <Link
-              href="/login"
+              href={isAuthenticated ? "/dashboard" : "/login"}
               className="rounded-xl bg-amber-500 px-10 py-4 text-base font-bold text-white shadow-lg shadow-amber-500/30 hover:bg-amber-600 transition-all hover:scale-105 active:scale-95"
             >
-              Get Started Free
+              {isAuthenticated ? "Go to Dashboard" : "Get Started Free"}
             </Link>
             <Link
               href="/#features"
@@ -39,7 +58,7 @@ export default function Home() {
       {/* Features Section */}
       <section id="features" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 border-t border-gray-100">
         <div className="mx-auto max-w-3xl text-center mb-16">
-          <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+          <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl font-heading">
             Everything You Need For Your <span className="text-amber-500 text-nowrap">SAT Preperation</span>
           </h2>
           <p className="mt-4 text-lg text-gray-600 font-medium">
@@ -102,17 +121,17 @@ export default function Home() {
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="relative rounded-[3rem] bg-amber-500 px-8 py-16 text-center shadow-2xl shadow-amber-500/20 overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full bg-white/5 opacity-40 pointer-events-none" />
-          <h2 className="text-3xl font-extrabold text-white sm:text-5xl mb-6 leading-tight">
+          <h2 className="text-3xl font-extrabold text-white sm:text-5xl mb-6 leading-tight font-heading">
             Ready to Optimize Your SAT Study?
           </h2>
           <p className="mx-auto max-w-2xl text-lg font-bold text-amber-50 mb-10">
             Join other students who are already using SAT Tracker to stay organized and motivated for their exam.
           </p>
           <Link
-            href="/login"
+            href={isAuthenticated ? "/dashboard" : "/login"}
             className="inline-block rounded-xl bg-white px-12 py-5 text-lg font-bold text-amber-600 shadow-xl hover:bg-gray-50 transition-all hover:scale-105 active:scale-95"
           >
-            Sign Up Now
+            {isAuthenticated ? "Go to Dashboard" : "Sign Up Now"}
           </Link>
         </div>
       </section>
@@ -123,6 +142,27 @@ export default function Home() {
           © 2026 SAT Tracker. All Rights Reserved.
         </p>
       </footer>
+
+      {/* Auth Pop-up */}
+      {showAuthPopup && (
+        <div className="fixed bottom-8 right-8 z-50 animate-in slide-in-from-bottom-5 duration-500">
+          <div className="bg-white p-6 rounded-3xl shadow-2xl border border-amber-100 max-w-sm">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center shrink-0">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" /></svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 mb-1">Welcome Back!</h3>
+                <p className="text-sm text-gray-500 font-medium mb-4">You are already signed in. Pick up where you left off.</p>
+                <div className="flex gap-3">
+                  <Link href="/dashboard" className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all shadow-md shadow-amber-500/20">Dashboard</Link>
+                  <button onClick={() => setShowAuthPopup(false)} className="px-4 py-2.5 text-gray-400 hover:text-gray-600 text-xs font-bold uppercase tracking-widest transition-colors">Dismiss</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

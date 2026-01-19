@@ -22,16 +22,7 @@ function PlanContent() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Set default date to today
-    if (!editId) {
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, "0");
-      const day = String(today.getDate()).padStart(2, "0");
-      setDate(`${year}-${month}-${day}`);
-    }
-  }, [editId]);
+  // No effect needed here as we initialize state from useState directly.
 
   useEffect(() => {
     async function loadPlan() {
