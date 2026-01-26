@@ -1,18 +1,40 @@
 
 import type { Metadata } from "next";
-import { Suspense } from "react";
+
+import { Inter, Roboto, Roboto_Condensed, Noto_Serif } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { UserActivityTracker } from "@/components/UserActivityTracker";
-import { NotificationPopups } from "@/components/NotificationPopups";
-import { NotificationChecker } from "@/components/NotificationChecker";
-import { Navbar } from "@/components/Navbar";
-import { FeedbackPopup } from "@/components/FeedbackPopup";
-import { AuthRedirectToast } from "@/components/AuthRedirectToast";
+import { LanguageProvider } from "@/context/LanguageContext";
+import { SettingsToolbar } from "@/components/SettingsToolbar";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const roboto = Roboto({
+  weight: ["100", "300", "400", "500", "700", "900"],
+  subsets: ["latin"],
+  variable: "--font-roboto",
+  display: "swap",
+});
+
+const robotoCondensed = Roboto_Condensed({
+  subsets: ["latin"],
+  variable: "--font-roboto-condensed",
+  display: "swap",
+});
+
+const notoSerif = Noto_Serif({
+  subsets: ["latin"],
+  variable: "--font-noto-serif",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "SAT Tracker - Boost Your SAT Study Productivity | Daily Study Planner",
-  description: "Plan your daily SAT study sessions, track progress, and build consistent study habits. Increase SAT productivity with smart planning, daily check-ins, and progress tracking for Math, Reading, and Writing sections.",
+  title: "SAT Tracker - Master Your SAT With Confidence | Complete SAT Preparation Platform",
+  description: "Transform your SAT preparation with SAT Tracker. Plan smarter, study focused, and track progress with our complete suite of tools. Join 120+ students already achieving their SAT goals with proven methods and real-time analytics.",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -44,9 +66,9 @@ export const metadata: Metadata = {
     "academic planning",
     "test preparation tool",
     "SAT exam prep",
-    "SAT Math",
-    "SAT Reading",
-    "SAT Writing"
+    "Pomodoro timer",
+    "study focus timer",
+    "SAT analytics"
   ],
   authors: [{ name: "SAT Tracker" }],
   creator: "SAT Tracker",
@@ -63,8 +85,8 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "SAT Tracker - Boost Your SAT Study Productivity",
-    description: "Plan your daily SAT study sessions, track progress, and build consistent study habits. Increase your SAT preparation productivity with our intuitive platform.",
+    title: "SAT Tracker - Master Your SAT With Confidence",
+    description: "Transform your SAT preparation with smart planning, focused study sessions, and real-time progress tracking. Join 120+ students achieving their SAT goals and become the very first user.",
     url: process.env.NEXT_PUBLIC_SITE_URL || "https://satracker.uz",
     siteName: "SAT Tracker",
     locale: "en_US",
@@ -72,8 +94,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "SAT Tracker - Boost Your SAT Study Productivity",
-    description: "Plan your daily SAT study sessions, track progress, and build consistent study habits.",
+    title: "SAT Tracker - Master Your SAT With Confidence",
+    description: "Transform your SAT preparation with smart planning, focused study sessions, and real-time progress tracking.",
   },
   robots: {
     index: true,
@@ -88,8 +110,6 @@ export const metadata: Metadata = {
   },
   verification: {
     // Add your verification codes here when you have them
-    // google: "your-google-verification-code",
-    // yandex: "your-yandex-verification-code",
   },
 };
 
@@ -102,31 +122,23 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#d97706" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
       </head>
       <body
-        className="antialiased font-sans"
+        className={`${inter.variable} ${roboto.variable} ${robotoCondensed.variable} ${notoSerif.variable} antialiased font-sans`}
       >
         <ThemeProvider
           attribute="data-theme"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
           themes={["light", "dark", "blue"]}
         >
-          <Navbar />
-          <main className="min-h-[calc(100vh-64px)]">
-            {children}
-          </main>
-          <UserActivityTracker />
-          <NotificationChecker />
-          <NotificationPopups />
-          <FeedbackPopup />
-          <Suspense fallback={null}>
-            <AuthRedirectToast />
-          </Suspense>
+          <LanguageProvider>
+            <main className="min-h-screen">
+              <SettingsToolbar />
+              {children}
+            </main>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

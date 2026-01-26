@@ -2,7 +2,6 @@
 
 @theme {
   /* Override standard colors with CSS variables for theming */
-  --color-white: var(--bg-card);
   --color-gray-50: var(--bg-background);
   --color-slate-50: var(--bg-background);
   --color-slate-100: var(--bg-background);
@@ -23,10 +22,10 @@
   --color-card: var(--bg-card);
   --color-primary: var(--color-primary);
   /* Fonts */
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-heading: "Roboto", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-condensed: "Roboto Condensed", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-serif: "Noto Serif", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-heading: var(--font-roboto), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-condensed: var(--font-roboto-condensed), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: var(--font-noto-serif), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 }
 
 /* Base Theme (Classic / Light) */
@@ -35,7 +34,7 @@
   --bg-card: #ffffff;
   --bg-nav: #ffffff;
   --text-primary: #111827; /* gray-900 */
-  --text-primary-inverse: #ffffff;
+  --text-primary-inverse: #fabd4bff;
   --text-secondary: #4b5563; /* gray-600 (Darker for readability) */
   --text-nav: #4b5563;
   --text-nav-hover: #f59e0b;
@@ -48,7 +47,7 @@
   --border-default: #e5e7eb; /* gray-200 */
 }
 
-/* Dark Theme (Deep Blue & Red Palette) */
+/* Dark Theme (Deep Blue and Red Palette) */
 [data-theme='dark'] {
   --bg-background: #0f172a; /* slate-900 (Deep Blue BG) */
   --bg-card: #1e293b; /* slate-800 (Lighter Blue Card) */
@@ -73,7 +72,7 @@
   --bg-card: #ffffff;
   --bg-nav: #ffffff;
   --text-primary: #0f172a; /* slate-900 */
-  --text-primary-inverse: #ffffff; /* Text on primary bg */
+  --text-primary-inverse: #fabd4bff; /* Text on primary bg */
   --text-secondary: #475569; /* slate-600 */
   --text-nav: #475569;
   --text-nav-hover: #3b82f6;
@@ -196,4 +195,109 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInFromTop {
+  from { 
+    opacity: 0; 
+    transform: translateY(-20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes slideInFromBottom {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes gradient {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Animation utilities */
+.animate-in {
+  animation-fill-mode: both;
+}
+
+.fade-in {
+  animation-name: fadeIn;
+}
+
+.slide-in-from-top-5 {
+  animation-name: slideInFromTop;
+  --tw-translate-y: -1.25rem;
+}
+
+.slide-in-from-bottom-4 {
+  animation-name: slideInFromBottom;
+  --tw-translate-y: 1rem;
+}
+
+.slide-in-from-bottom-5 {
+  animation-name: slideInFromBottom;
+  --tw-translate-y: 1.25rem;
+}
+
+.slide-in-from-bottom-6 {
+  animation-name: slideInFromBottom;
+  --tw-translate-y: 1.5rem;
+}
+
+.slide-in-from-bottom-8 {
+  animation-name: slideInFromBottom;
+  --tw-translate-y: 2rem;
+}
+
+.slide-in-from-bottom-10 {
+  animation-name: slideInFromBottom;
+  --tw-translate-y: 2.5rem;
+}
+
+.duration-500 {
+  animation-duration: 500ms;
+}
+
+.duration-700 {
+  animation-duration: 700ms;
+}
+
+.duration-1000 {
+  animation-duration: 1000ms;
+}
+
+.animate-gradient {
+  animation: gradient 8s ease infinite;
+  background-size: 200% 200%;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+
+.pause-on-hover:hover {
+  animation-play-state: paused;
 }
