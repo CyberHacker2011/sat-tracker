@@ -21,7 +21,7 @@
   --color-background: var(--bg-background);
   --color-card: var(--bg-card);
   --color-primary: var(--color-primary);
-  /* Fonts */
+  /* Fonts - Reverted to Google Fonts */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-heading: var(--font-roboto), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-condensed: var(--font-roboto-condensed), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -42,7 +42,6 @@
   --color-primary: #f59e0b; /* amber-500 */
   --color-primary-dark: #d97706; /* amber-600 */
   --color-primary-light: #fffbeb; /* amber-50 */
-  
   --color-accent: #3b82f6; /* blue-500 */
   --border-default: #e5e7eb; /* gray-200 */
 }
@@ -187,9 +186,28 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-panel {
-  background: var(--bg-card);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--color-primary-light);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Neon Glow Utilities */
+.shadow-glow-primary {
+  box-shadow: 0 0 20px -5px var(--color-primary), 0 0 10px -5px var(--color-primary);
+}
+
+.shadow-glow-accent {
+  box-shadow: 0 0 20px -5px var(--color-accent), 0 0 10px -5px var(--color-accent);
+}
+
+.text-glow {
+  text-shadow: 0 0 10px currentColor;
+}
+
+.border-glow {
+  box-shadow: inset 0 0 15px -5px currentColor;
 }
 
 @keyframes slideUp {
@@ -273,15 +291,21 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .duration-500 {
+  transition-duration: 500ms;
   animation-duration: 500ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .duration-700 {
+  transition-duration: 700ms;
   animation-duration: 700ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .duration-1000 {
+  transition-duration: 1000ms;
   animation-duration: 1000ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .animate-gradient {

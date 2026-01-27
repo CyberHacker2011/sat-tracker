@@ -49,7 +49,7 @@ export function SettingsToolbar() {
 
       {/* Sidebar Panel */}
       <div 
-        className={`fixed top-0 right-0 h-full w-80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-2xl z-[60] transform transition-transform duration-300 ease-in-out border-l border-gray-200 dark:border-slate-800 ${
+        className={`fixed top-0 right-0 h-full w-80 bg-background/95 backdrop-blur-xl shadow-2xl z-[60] transform transition-transform duration-300 ease-in-out border-l border-border ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >

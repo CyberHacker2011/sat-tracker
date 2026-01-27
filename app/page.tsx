@@ -52,18 +52,18 @@ export default function Home() {
   const appUrl = "https://app.satracker.uz";
 
   return (
-    <div className="w-full min-h-screen bg-background overflow-hidden relative">
+    <div className="w-full min-h-screen bg-background relative overflow-x-hidden">
       {/* Background - Clean & Static for Performance */}
       <div className="fixed inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none" />
 
       {/* Hero Section */}
-      <section className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+      <section className="relative mx-auto max-w-7xl px-4 pt-32 pb-16 sm:px-6 lg:px-8">
         <div className={`relative text-center max-w-6xl mx-auto transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           
-          {/* Badge Element - Optimized */}
-          <div className="inline-flex items-center gap-2.5 px-6 py-3 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 
-                          rounded-full border border-primary/30 mb-10 shadow-xl shadow-primary/10 backdrop-blur-sm
-                          animate-in fade-in slide-in-from-top-5 duration-700"
+          {/* Badge Element - Neon Style */}
+          <div className="inline-flex items-center gap-2.5 px-6 py-3 bg-background/50 backdrop-blur-md
+                          rounded-full border border-primary/30 mb-12 shadow-glow-primary
+                          animate-in fade-in slide-in-from-top-5 duration-700 hover:scale-105 transition-transform"
                style={{ animationDelay: '0.1s' }}>
             <span className="relative flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
@@ -72,15 +72,15 @@ export default function Home() {
             <p className="text-xs font-extrabold text-primary uppercase tracking-[0.2em]">{t("hero.badge")}</p>
           </div>
 
-          {/* Main Heading with Enhanced Gradient */}
-          <h1 className="text-6xl font-black tracking-tight sm:text-7xl md:text-8xl lg:text-9xl mb-10 leading-[0.95] font-heading
-                         animate-in fade-in slide-in-from-bottom-10 duration-1000"
+          {/* Main Heading with Neon Effect */}
+          <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-9xl font-black tracking-tight mb-8 leading-tight font-heading
+                         animate-in fade-in slide-in-from-bottom-10 duration-1000 drop-shadow-2xl py-2 px-2"
               style={{ animationDelay: '0.2s' }}>
-            <span className="block text-gray-900">
+            <span className="block text-primary drop-shadow-[0_0_15px_rgba(var(--color-primary),0.3)]">
               {t("hero.title.master")}
             </span>
-            <span className="block mt-3 text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-orange-500 to-amber-600 
-                           animate-gradient bg-[length:200%_auto] drop-shadow-[0_0_30px_rgba(251,146,60,0.3)]">
+            <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600 
+                           animate-gradient bg-[length:200%_auto] filter drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">
               {t("hero.title.journey")}
             </span>
           </h1>
@@ -99,48 +99,49 @@ export default function Home() {
           </p>
 
           {/* Stats Grid - Optimized */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-14 max-w-5xl mx-auto
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10 max-w-5xl mx-auto
                           animate-in fade-in slide-in-from-bottom-6 duration-1000"
                style={{ animationDelay: '0.6s' }}>
             
-            <div className="group relative bg-gradient-to-br from-card via-card to-background p-8 rounded-3xl border border-border 
-                           hover:border-amber-500/50 hover:shadow-2xl hover:shadow-amber-500/10 transition-all duration-300
-                           overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            {/* Stats Items */}
+            <div className="group relative bg-card/50 backdrop-blur-lg p-8 rounded-3xl border border-white/10 dark:border-white/5
+                           hover:border-primary/50 hover:shadow-glow-primary transition-all duration-500
+                           overflow-hidden ring-1 ring-black/5 dark:ring-white/5">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative">
-                <div className="text-5xl font-black bg-gradient-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent mb-3">
+                <div className="text-5xl font-black text-primary mb-3 drop-shadow-md">
                   {userCount.toLocaleString()}+
                 </div>
-                <div className="text-sm font-bold text-secondary uppercase tracking-[0.15em]">{t("stats.active_students")}</div>
+                <div className="text-sm font-bold text-secondary uppercase tracking-[0.2em]">{t("stats.active_students")}</div>
               </div>
             </div>
             
-            <div className="group relative bg-gradient-to-br from-card via-card to-background p-8 rounded-3xl border border-border 
-                           hover:border-blue-500/50 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300
-                           overflow-hidden">
+            <div className="group relative bg-card/50 backdrop-blur-lg p-8 rounded-3xl border border-white/10 dark:border-white/5
+                           hover:border-blue-500/50 hover:shadow-[0_0_30px_-5px_rgba(59,130,246,0.3)] transition-all duration-500
+                           overflow-hidden ring-1 ring-black/5 dark:ring-white/5">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative">
-                <div className="text-5xl font-black bg-gradient-to-r from-blue-600 to-cyan-500 bg-clip-text text-transparent mb-3">
+                <div className="text-5xl font-black text-blue-500 mb-3 drop-shadow-md">
                   {sessionCount.toLocaleString()}+
                 </div>
-                <div className="text-sm font-bold text-secondary uppercase tracking-[0.15em]">{t("stats.study_sessions")}</div>
+                <div className="text-sm font-bold text-secondary uppercase tracking-[0.2em]">{t("stats.study_sessions")}</div>
               </div>
             </div>
             
-            <div className="group relative bg-gradient-to-br from-card via-card to-background p-8 rounded-3xl border border-border 
-                           hover:border-purple-500/50 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-300
-                           overflow-hidden">
+            <div className="group relative bg-card/50 backdrop-blur-lg p-8 rounded-3xl border border-white/10 dark:border-white/5
+                           hover:border-purple-500/50 hover:shadow-[0_0_30px_-5px_rgba(168,85,247,0.3)] transition-all duration-500
+                           overflow-hidden ring-1 ring-black/5 dark:ring-white/5">
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative">
                 <div className="flex items-center justify-center gap-3 mb-3">
-                  <span className="text-5xl font-black bg-gradient-to-r from-amber-500 to-yellow-500 bg-clip-text text-transparent">
+                  <span className="text-5xl font-black text-purple-500 drop-shadow-md">
                     {rating.toFixed(2)}
                   </span>
-                  <svg className="w-10 h-10 text-amber-400 fill-current drop-shadow-lg" viewBox="0 0 20 20">
+                  <svg className="w-10 h-10 text-amber-400 fill-current drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 </div>
-                <div className="text-sm font-bold text-secondary uppercase tracking-[0.15em]">{t("stats.user_rating")}</div>
+                <div className="text-sm font-bold text-secondary uppercase tracking-[0.2em]">{t("stats.user_rating")}</div>
               </div>
             </div>
           </div>
@@ -187,10 +188,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="relative mx-auto max-w-7xl px-4 py-32 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center mb-20">
-          <h2 className="text-5xl font-black tracking-tight sm:text-6xl font-heading mb-8">
+      {/* Features Section - Compact & Responsive */}
+      <section id="features" className="relative mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl text-center mb-12">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight mb-6 drop-shadow-lg font-heading">
             {t("features.title")}{' '}
             <span className="block mt-2 bg-gradient-to-r from-amber-600 via-orange-500 to-amber-600 bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
               {t("features.subtitle")}
@@ -295,7 +296,7 @@ export default function Home() {
       </section>
 
       {/* Premium Section - Ultra Enhanced */}
-      <section id="premium" className="relative mx-auto max-w-7xl px-4 py-32 sm:px-6 lg:px-8">
+      <section id="premium" className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="relative rounded-[3rem] bg-gradient-to-br from-amber-600 via-orange-500 to-amber-600 bg-[length:200%_200%] 
                         animate-gradient px-10 py-24 text-center shadow-2xl shadow-amber-500/40 overflow-hidden">
           {/* Decorative animated elements */}
@@ -408,7 +409,7 @@ export default function Home() {
       </section>
 
       {/* Results/Testimonials Section - Infinite Marquee */}
-      <section className="relative w-full py-32 overflow-hidden bg-background">
+      <section className="relative w-full py-20 overflow-hidden bg-background">
         <div className="text-center mb-20 px-4">
           <h2 className="text-5xl font-black tracking-tight sm:text-6xl font-heading mb-8">
             {t("reviews.title")}<br/>
@@ -492,7 +493,7 @@ export default function Home() {
       </section>
 
       {/* Final CTA Section - Ultra Enhanced */}
-      <section className="relative mx-auto max-w-7xl px-4 py-32 sm:px-6 lg:px-8">
+      <section className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="relative rounded-[3rem] bg-gradient-to-r from-amber-600 via-orange-500 to-amber-600 px-10 py-28 text-center 
                         shadow-2xl shadow-amber-500/40 overflow-hidden bg-[length:200%_auto] animate-gradient">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxIDEuNzktNCA0LTRzNCAxLjc5IDQgNC0xLjc5IDQtNCA0LTQtMS43OS00LTR6TTAgMTRjMC0yLjIxIDEuNzktNCA0LTRzNCAxLjc5IDQgNC0xLjc5IDQtNCA0LTQtMS43OS00LTR6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-20" />
@@ -538,28 +539,28 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer - Enhanced */}
-      <footer className="relative mx-auto max-w-7xl px-4 py-20 border-t-2 border-border">
-        <div className="text-center space-y-6">
-          <div className="flex items-center justify-center gap-8 mb-8">
-            <Link href={`${appUrl}/about`} className="text-base font-black text-secondary hover:text-primary transition-colors hover:scale-110 transition-transform duration-300">
+      {/* Footer - Responsive & Enhanced */}
+      <footer className="relative mx-auto max-w-7xl px-4 py-12 border-t-2 border-border/50 bg-background/50 backdrop-blur-sm">
+        <div className="text-center space-y-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8 mb-8">
+            <Link href={`${appUrl}/about`} className="text-base font-black text-secondary hover:text-primary transition-all hover:scale-110 duration-300">
               {t("footer.about")}
             </Link>
-            <span className="text-border font-bold">|</span>
-            <Link href={`${appUrl}/privacy`} className="text-base font-black text-secondary hover:text-primary transition-colors hover:scale-110 transition-transform duration-300">
+            <span className="hidden sm:block text-border font-bold">|</span>
+            <Link href={`${appUrl}/privacy`} className="text-base font-black text-secondary hover:text-primary transition-all hover:scale-110 duration-300">
               {t("footer.privacy")}
             </Link>
-            <span className="text-border font-bold">|</span>
-            <Link href={`${appUrl}/login`} className="text-base font-black text-secondary hover:text-primary transition-colors hover:scale-110 transition-transform duration-300">
+            <span className="hidden sm:block text-border font-bold">|</span>
+            <Link href={`${appUrl}/login`} className="text-base font-black text-secondary hover:text-primary transition-all hover:scale-110 duration-300">
               {t("btn.signin")}
             </Link>
-            <span className="text-border font-bold">|</span>
-            <Link href={`${appUrl}/premium`} className="text-base font-black text-secondary hover:text-amber-600 dark:hover:text-amber-400 transition-colors hover:scale-110 transition-transform duration-300">
+            <span className="hidden sm:block text-border font-bold">|</span>
+            <Link href={`${appUrl}/premium`} className="text-base font-black bg-gradient-to-r from-amber-500 to-amber-700 bg-clip-text text-transparent hover:scale-110 transition-transform duration-300">
               Premium
             </Link>
-            <span className="text-border font-bold">|</span>
+            <span className="hidden sm:block text-border font-bold">|</span>
             <a href="https://t.me/@satrackerbot" target="_blank" rel="noopener noreferrer" 
-               className="text-base font-black text-secondary hover:text-blue-600 dark:hover:text-blue-400 transition-colors hover:scale-110 transition-transform duration-300">
+               className="text-base font-black text-secondary hover:text-blue-500 transition-all hover:scale-110 duration-300">
               {t("footer.contact")}
             </a>
           </div>
