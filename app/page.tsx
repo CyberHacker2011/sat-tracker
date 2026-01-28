@@ -678,7 +678,7 @@ export default function Home() {
                     {t("reviews.sarah")}
                   </p>
                   <div className="font-black text-primary text-lg">
-                    Sarah M.
+                    Umida S.
                   </div>
                   <div className="text-base text-amber-600 dark:text-amber-400 font-bold">
                     {t("reviews.scored")} 1480
@@ -701,9 +701,7 @@ export default function Home() {
                   <p className="text-secondary/90 font-semibold mb-6 leading-relaxed text-lg">
                     {t("reviews.james")}
                   </p>
-                  <div className="font-black text-primary text-lg">
-                    James K.
-                  </div>
+                  <div className="font-black text-primary text-lg">Said K.</div>
                   <div className="text-base text-blue-600 dark:text-blue-400 font-bold">
                     {t("reviews.scored")} 1520
                   </div>
@@ -726,7 +724,7 @@ export default function Home() {
                     {t("reviews.emily")}
                   </p>
                   <div className="font-black text-primary text-lg">
-                    Emily R.
+                    Abror G.
                   </div>
                   <div className="text-base text-purple-600 dark:text-purple-400 font-bold">
                     {t("reviews.scored")} 1500
@@ -750,7 +748,7 @@ export default function Home() {
                     {t("reviews.david")}
                   </p>
                   <div className="font-black text-primary text-lg">
-                    David L.
+                    Kamoliddin J.
                   </div>
                   <div className="text-base text-green-600 dark:text-green-400 font-bold">
                     {t("reviews.scored")} 1550
@@ -774,7 +772,7 @@ export default function Home() {
                     {t("reviews.layla")}
                   </p>
                   <div className="font-black text-primary text-lg">
-                    Layla A.
+                    Sevinch A.
                   </div>
                   <div className="text-base text-rose-600 dark:text-rose-400 font-bold">
                     {t("reviews.scored")} 1420
