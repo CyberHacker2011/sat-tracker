@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabaseClient";
 import { useLanguage } from "@/context/LanguageContext";
+import Slideshow from "@/components/Slideshow";
 
 export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -257,6 +258,9 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {/* App Slideshow Preview */}
+      <Slideshow />
 
       {/* Features Section - Compact & Responsive */}
       <section

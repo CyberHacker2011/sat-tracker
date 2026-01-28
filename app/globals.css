@@ -8,7 +8,7 @@
   --color-gray-100: var(--bg-background);
   --color-slate-200: var(--border-default);
   --color-gray-200: var(--border-default);
-  
+
   --color-gray-900: var(--text-primary);
   --color-slate-900: var(--text-primary);
   --color-gray-500: var(--text-secondary);
@@ -16,16 +16,18 @@
   --color-amber-600: var(--color-primary-dark);
   --color-amber-50: var(--color-primary-light);
   --color-blue-500: var(--color-accent);
-  
+
   /* System colors for easier mapping */
   --color-background: var(--bg-background);
   --color-card: var(--bg-card);
   --color-primary: var(--color-primary);
-  /* Fonts - Reverted to Google Fonts */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-heading: var(--font-roboto), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-condensed: var(--font-roboto-condensed), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-serif: var(--font-noto-serif), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  /* Fonts - Modern Stack */
+  --font-sans:
+    var(--font-sans), ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-heading:
+    var(--font-heading), ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 /* Base Theme (Classic / Light) */
@@ -38,7 +40,7 @@
   --text-secondary: #4b5563; /* gray-600 (Darker for readability) */
   --text-nav: #4b5563;
   --text-nav-hover: #f59e0b;
-  
+
   --color-primary: #f59e0b; /* amber-500 */
   --color-primary-dark: #d97706; /* amber-600 */
   --color-primary-light: #fffbeb; /* amber-50 */
@@ -47,7 +49,7 @@
 }
 
 /* Dark Theme (Deep Blue and Red Palette) */
-[data-theme='dark'] {
+[data-theme="dark"] {
   --bg-background: #0f172a; /* slate-900 (Deep Blue BG) */
   --bg-card: #1e293b; /* slate-800 (Lighter Blue Card) */
   --bg-nav: #1e293b;
@@ -56,17 +58,17 @@
   --text-secondary: #94a3b8; /* slate-400 */
   --text-nav: #cbd5e1; /* slate-300 */
   --text-nav-hover: #ef4444; /* red-500 */
-  
+
   --color-primary: #ef4444; /* red-500 (Vibrant Red Accent) */
   --color-primary-dark: #dc2626; /* red-600 */
   --color-primary-light: #450a0a; /* red-950 (Dark Red BG) */
-  
+
   --color-accent: #3b82f6; /* blue-500 */
   --border-default: #334155; /* slate-700 */
 }
 
 /* Blue Theme (Amber becomes Blue) */
-[data-theme='blue'] {
+[data-theme="blue"] {
   --bg-background: #f0f9ff; /* sky-50 */
   --bg-card: #ffffff;
   --bg-nav: #ffffff;
@@ -75,17 +77,19 @@
   --text-secondary: #475569; /* slate-600 */
   --text-nav: #475569;
   --text-nav-hover: #3b82f6;
-  
+
   --color-primary: #3b82f6; /* blue-500 */
   --color-primary-dark: #2563eb; /* blue-600 */
   --color-primary-light: #eff6ff; /* blue-50 */
-  
+
   --color-accent: #f59e0b; /* amber-500 (Swap accent) */
   --border-default: #e2e8f0; /* slate-200 */
 }
 
 /* Force pure background on all root levels */
-html, body, #__next {
+html,
+body,
+#__next {
   background-color: var(--bg-background) !important;
   color: var(--text-primary);
   font-family: var(--font-sans);
@@ -95,8 +99,11 @@ html, body, #__next {
 }
 
 /* Ensure text on primary buttons is always readable */
-.bg-amber-500, .bg-blue-500, .bg-primary, .bg-red-500 {
-    color: var(--text-primary-inverse) !important;
+.bg-amber-500,
+.bg-blue-500,
+.bg-primary,
+.bg-red-500 {
+  color: var(--text-primary-inverse) !important;
 }
 
 /* 
@@ -105,77 +112,87 @@ html, body, #__next {
   to use the Red primary color. This avoids having to rewrite every component.
   Same for hover states.
 */
-[data-theme='dark'] .bg-amber-500 {
+[data-theme="dark"] .bg-amber-500 {
   background-color: var(--color-primary) !important;
 }
 
-[data-theme='dark'] .hover\:bg-amber-600:hover {
+[data-theme="dark"] .hover\:bg-amber-600:hover {
   background-color: var(--color-primary-dark) !important;
 }
 
-[data-theme='dark'] .text-amber-500 {
+[data-theme="dark"] .text-amber-500 {
   color: var(--color-primary) !important;
 }
 
-[data-theme='dark'] .text-amber-600 {
+[data-theme="dark"] .text-amber-600 {
   color: var(--color-primary-dark) !important;
 }
 
-[data-theme='dark'] .border-amber-100, 
-[data-theme='dark'] .border-amber-200 {
+[data-theme="dark"] .border-amber-100,
+[data-theme="dark"] .border-amber-200 {
   border-color: var(--color-primary-light) !important;
 }
 
-[data-theme='dark'] .bg-amber-50 {
-  background-color: rgba(239, 68, 68, 0.1) !important; /* Red-500 at 10% opacity for soft backgrounds */
+[data-theme="dark"] .bg-amber-50 {
+  background-color: rgba(
+    239,
+    68,
+    68,
+    0.1
+  ) !important; /* Red-500 at 10% opacity for soft backgrounds */
 }
 
 /* 
   ELIMINATE WHITE IN DARK THEME:
   Force standard Tailwind light backgrounds to adapt to the dark card/bg colors.
 */
-[data-theme='dark'] .bg-white,
-[data-theme='dark'] .bg-card,
-[data-theme='dark'] .bg-white\/80 {
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-card,
+[data-theme="dark"] .bg-white\/80 {
   background-color: var(--bg-card) !important;
 }
 
-[data-theme='dark'] .bg-slate-50,
-[data-theme='dark'] .bg-gray-50,
-[data-theme='dark'] .bg-slate-100,
-[data-theme='dark'] .bg-gray-100,
-[data-theme='dark'] .bg-slate-200\/50,
-[data-theme='dark'] .bg-slate-100\/50 {
+[data-theme="dark"] .bg-slate-50,
+[data-theme="dark"] .bg-gray-50,
+[data-theme="dark"] .bg-slate-100,
+[data-theme="dark"] .bg-gray-100,
+[data-theme="dark"] .bg-slate-200\/50,
+[data-theme="dark"] .bg-slate-100\/50 {
   background-color: var(--bg-background) !important;
 }
 
-[data-theme='dark'] .hover\:bg-white:hover,
-[data-theme='dark'] .hover\:bg-gray-50:hover,
-[data-theme='dark'] .hover\:bg-slate-50:hover {
+[data-theme="dark"] .hover\:bg-white:hover,
+[data-theme="dark"] .hover\:bg-gray-50:hover,
+[data-theme="dark"] .hover\:bg-slate-50:hover {
   background-color: var(--bg-background) !important;
   opacity: 0.9;
 }
 
-[data-theme='dark'] .border-slate-100,
-[data-theme='dark'] .border-gray-100,
-[data-theme='dark'] .border-slate-200,
-[data-theme='dark'] .border-gray-200 {
+[data-theme="dark"] .border-slate-100,
+[data-theme="dark"] .border-gray-100,
+[data-theme="dark"] .border-slate-200,
+[data-theme="dark"] .border-gray-200 {
   border-color: var(--border-default) !important;
 }
 
-[data-theme='dark'] .text-slate-900,
-[data-theme='dark'] .text-gray-900,
-[data-theme='dark'] .text-slate-800 {
+[data-theme="dark"] .text-slate-900,
+[data-theme="dark"] .text-gray-900,
+[data-theme="dark"] .text-slate-800 {
   color: var(--text-primary) !important;
 }
 
-[data-theme='dark'] .text-slate-400,
-[data-theme='dark'] .text-gray-400,
-[data-theme='dark'] .text-slate-500 {
+[data-theme="dark"] .text-slate-400,
+[data-theme="dark"] .text-gray-400,
+[data-theme="dark"] .text-slate-500 {
   color: var(--text-secondary) !important;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-heading);
 }
 
@@ -195,11 +212,15 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Neon Glow Utilities */
 .shadow-glow-primary {
-  box-shadow: 0 0 20px -5px var(--color-primary), 0 0 10px -5px var(--color-primary);
+  box-shadow:
+    0 0 20px -5px var(--color-primary),
+    0 0 10px -5px var(--color-primary);
 }
 
 .shadow-glow-accent {
-  box-shadow: 0 0 20px -5px var(--color-accent), 0 0 10px -5px var(--color-accent);
+  box-shadow:
+    0 0 20px -5px var(--color-accent),
+    0 0 10px -5px var(--color-accent);
 }
 
 .text-glow {
@@ -211,39 +232,50 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideInFromTop {
-  from { 
-    opacity: 0; 
-    transform: translateY(-20px); 
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
   }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 @keyframes slideInFromBottom {
-  from { 
-    opacity: 0; 
-    transform: translateY(20px); 
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 @keyframes gradient {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {
@@ -314,8 +346,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .animate-marquee {

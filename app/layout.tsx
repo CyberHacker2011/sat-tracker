@@ -1,46 +1,30 @@
-
 import type { Metadata } from "next";
-import { Inter, Roboto, Roboto_Condensed, Noto_Serif } from "next/font/google";
+import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { SettingsToolbar } from "@/components/SettingsToolbar";
 
-const inter = Inter({
+const outfit = Outfit({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-sans",
   display: "swap",
 });
 
-const roboto = Roboto({
-  weight: ["100", "300", "400", "500", "700", "900"],
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-roboto",
-  display: "swap",
-});
-
-const robotoCondensed = Roboto_Condensed({
-  subsets: ["latin"],
-  variable: "--font-roboto-condensed",
-  display: "swap",
-});
-
-const notoSerif = Noto_Serif({
-  subsets: ["latin"],
-  variable: "--font-noto-serif",
+  variable: "--font-heading",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "SAT Tracker - Master Your SAT With Confidence | Complete SAT Preparation Platform",
-  description: "Transform your SAT preparation with SAT Tracker. Plan smarter, study focused, and track progress with our complete suite of tools. Join 120+ students already achieving their SAT goals with proven methods and real-time analytics.",
+  title:
+    "SAT Tracker - Master Your SAT With Confidence | Complete SAT Preparation Platform",
+  description:
+    "Transform your SAT preparation with SAT Tracker. Plan smarter, study focused, and track progress with our complete suite of tools. Join 120+ students already achieving their SAT goals with proven methods and real-time analytics.",
   icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-    ],
-    apple: [
-      { url: "/favicon.ico", sizes: "any" },
-    ],
+    icon: [{ url: "/favicon.ico", sizes: "any" }],
+    apple: [{ url: "/favicon.ico", sizes: "any" }],
   },
   appleWebApp: {
     capable: true,
@@ -67,7 +51,7 @@ export const metadata: Metadata = {
     "SAT exam prep",
     "Pomodoro timer",
     "study focus timer",
-    "SAT analytics"
+    "SAT analytics",
   ],
   authors: [{ name: "SAT Tracker" }],
   creator: "SAT Tracker",
@@ -85,7 +69,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "SAT Tracker - Master Your SAT With Confidence",
-    description: "Transform your SAT preparation with smart planning, focused study sessions, and real-time progress tracking. Join 120+ students achieving their SAT goals and become the very first user.",
+    description:
+      "Transform your SAT preparation with smart planning, focused study sessions, and real-time progress tracking. Join 120+ students achieving their SAT goals and become the very first user.",
     url: process.env.NEXT_PUBLIC_SITE_URL || "https://satracker.uz",
     siteName: "SAT Tracker",
     locale: "en_US",
@@ -94,7 +79,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "SAT Tracker - Master Your SAT With Confidence",
-    description: "Transform your SAT preparation with smart planning, focused study sessions, and real-time progress tracking.",
+    description:
+      "Transform your SAT preparation with smart planning, focused study sessions, and real-time progress tracking.",
   },
   robots: {
     index: true,
@@ -123,7 +109,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#d97706" />
       </head>
       <body
-        className={`${inter.variable} ${roboto.variable} ${robotoCondensed.variable} ${notoSerif.variable} antialiased font-sans`}
+        className={`${outfit.variable} ${jakarta.variable} antialiased font-sans`}
       >
         <ThemeProvider
           attribute="data-theme"
