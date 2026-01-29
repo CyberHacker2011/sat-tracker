@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* tailwindcss v4 theme definitions */
 @theme {
   /* Override standard colors with CSS variables for theming */
   --color-gray-50: var(--bg-background);
@@ -30,60 +31,60 @@
     BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Base Theme (Classic / Light) */
+/* Base Theme (Light / Amber) - Matches satracker-native Light */
 :root {
-  --bg-background: #f9fafb; /* gray-50 */
-  --bg-card: #ffffff;
+  --bg-background: #ffffff; /* Native: #ffffff */
+  --bg-card: #f8fafc; /* Native: #f8fafc */
   --bg-nav: #ffffff;
-  --text-primary: #111827; /* gray-900 */
-  --text-primary-inverse: #fabd4bff;
-  --text-secondary: #4b5563; /* gray-600 (Darker for readability) */
-  --text-nav: #4b5563;
+  --text-primary: #0f172a; /* Native: #0f172a */
+  --text-primary-inverse: #ffffff;
+  --text-secondary: #64748b; /* Native: #64748b */
+  --text-nav: #64748b;
   --text-nav-hover: #f59e0b;
 
-  --color-primary: #f59e0b; /* amber-500 */
-  --color-primary-dark: #d97706; /* amber-600 */
-  --color-primary-light: #fffbeb; /* amber-50 */
-  --color-accent: #3b82f6; /* blue-500 */
-  --border-default: #e5e7eb; /* gray-200 */
+  --color-primary: #f59e0b; /* Native: #f59e0b (Amber) */
+  --color-primary-dark: #d97706; /* Native: #d97706 */
+  --color-primary-light: #fef3c7; /* Native: #fef3c7 */
+  --color-accent: #06b6d4; /* Native: #06b6d4 (Cyan) */
+  --border-default: #cbd5e1; /* Native: #cbd5e1 */
 }
 
-/* Dark Theme (Deep Blue and Red Palette) */
+/* Dark Theme (Indigo/Slate) - Matches satracker-native Dark */
 [data-theme="dark"] {
-  --bg-background: #0f172a; /* slate-900 (Deep Blue BG) */
-  --bg-card: #1e293b; /* slate-800 (Lighter Blue Card) */
+  --bg-background: #0f172a; /* Native: #0f172a */
+  --bg-card: #1e293b; /* Native: #1e293b */
   --bg-nav: #1e293b;
-  --text-primary: #f8fafc; /* slate-50 */
+  --text-primary: #f8fafc; /* Native: #f8fafc */
   --text-primary-inverse: #ffffff;
-  --text-secondary: #94a3b8; /* slate-400 */
-  --text-nav: #cbd5e1; /* slate-300 */
-  --text-nav-hover: #ef4444; /* red-500 */
+  --text-secondary: #94a3b8; /* Native: #94a3b8 */
+  --text-nav: #94a3b8;
+  --text-nav-hover: #818cf8;
 
-  --color-primary: #ef4444; /* red-500 (Vibrant Red Accent) */
-  --color-primary-dark: #dc2626; /* red-600 */
-  --color-primary-light: #450a0a; /* red-950 (Dark Red BG) */
+  --color-primary: #818cf8; /* Native: #818cf8 (Indigo) */
+  --color-primary-dark: #6366f1; /* Native: #6366f1 */
+  --color-primary-light: #312e81; /* Native: #312e81 */
 
-  --color-accent: #3b82f6; /* blue-500 */
-  --border-default: #334155; /* slate-700 */
+  --color-accent: #22d3ee; /* Native: #22d3ee (Cyan) */
+  --border-default: #334155; /* Native: #334155 */
 }
 
-/* Blue Theme (Amber becomes Blue) */
+/* Blue Theme - Matches satracker-native Blue */
 [data-theme="blue"] {
-  --bg-background: #f0f9ff; /* sky-50 */
-  --bg-card: #ffffff;
+  --bg-background: #f0f9ff; /* Native: #f0f9ff */
+  --bg-card: #ffffff; /* Native: #ffffff */
   --bg-nav: #ffffff;
-  --text-primary: #0f172a; /* slate-900 */
-  --text-primary-inverse: #fabd4bff; /* Text on primary bg */
-  --text-secondary: #475569; /* slate-600 */
-  --text-nav: #475569;
-  --text-nav-hover: #3b82f6;
+  --text-primary: #0c4a6e; /* Native: #0c4a6e */
+  --text-primary-inverse: #ffffff;
+  --text-secondary: #64748b; /* Native: #64748b */
+  --text-nav: #64748b;
+  --text-nav-hover: #0ea5e9;
 
-  --color-primary: #3b82f6; /* blue-500 */
-  --color-primary-dark: #2563eb; /* blue-600 */
-  --color-primary-light: #eff6ff; /* blue-50 */
+  --color-primary: #0ea5e9; /* Native: #0ea5e9 */
+  --color-primary-dark: #0284c7; /* Native: #0284c7 */
+  --color-primary-light: #e0f2fe; /* Native: #e0f2fe */
 
-  --color-accent: #f59e0b; /* amber-500 (Swap accent) */
-  --border-default: #e2e8f0; /* slate-200 */
+  --color-accent: #f59e0b; /* Native: #f59e0b (Amber) */
+  --border-default: #bae6fd; /* Native: #bae6fd */
 }
 
 /* Force pure background on all root levels */
@@ -102,15 +103,15 @@ body,
 .bg-amber-500,
 .bg-blue-500,
 .bg-primary,
-.bg-red-500 {
+.bg-red-500,
+.bg-indigo-500 {
   color: var(--text-primary-inverse) !important;
 }
 
 /* 
   AUTO-ADAPTATION:
-  When in Dark Mode (Red Theme), force amber-500 elements (which are the default primary)
-  to use the Red primary color. This avoids having to rewrite every component.
-  Same for hover states.
+  When in Dark Mode (Indigo Theme), force amber-500 elements (which are the default primary)
+  to use the Indigo primary color.
 */
 [data-theme="dark"] .bg-amber-500 {
   background-color: var(--color-primary) !important;
@@ -135,11 +136,11 @@ body,
 
 [data-theme="dark"] .bg-amber-50 {
   background-color: rgba(
-    239,
-    68,
-    68,
+    99,
+    102,
+    241,
     0.1
-  ) !important; /* Red-500 at 10% opacity for soft backgrounds */
+  ) !important; /* Indigo at 10% opacity */
 }
 
 /* 
@@ -274,12 +275,14 @@ h6 {
 }
 
 @keyframes gradient {
-  0%,
-  100% {
+  0% {
     background-position: 0% 50%;
   }
   50% {
     background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
 
