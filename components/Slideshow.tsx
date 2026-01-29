@@ -3,19 +3,7 @@
 import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 
-const images = [
-  "/Screenshot 2026-01-28 202951.png",
-  "/Screenshot 2026-01-28 203024.png",
-  "/Screenshot 2026-01-28 203051.png",
-  "/Screenshot 2026-01-28 203156.png",
-  "/Screenshot 2026-01-28 203204.png",
-  "/Screenshot 2026-01-28 203210.png",
-  "/Screenshot 2026-01-28 203222.png",
-  "/Screenshot 2026-01-28 203300.png",
-  "/Screenshot 2026-01-28 203328.png",
-  "/Screenshot 2026-01-28 203503.png",
-  "/Screenshot 2026-01-28 203508.png",
-];
+const images = ["1.png", "2.png", "3.png", "4.png", "5.png", "6.png"];
 
 export default function Slideshow() {
   const { t } = useLanguage();
@@ -55,7 +43,7 @@ export default function Slideshow() {
                 <div
                   key={`${src}-${index}`}
                   // Desktop ratio (16:9) - Width 800px, aspect-video automatically handles height
-                  className="relative w-[800px] aspect-video flex-shrink-0 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.05)] transition-all duration-500 hover:scale-[1.02] hover:-translate-y-2 group/item bg-slate-900 border border-white/20 hover:border-white/40 hover:shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+                  className="relative w-[280px] sm:w-[600px] lg:w-[800px] aspect-video flex-shrink-0 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.05)] transition-all duration-500 hover:scale-[1.02] hover:-translate-y-2 group/item bg-slate-900 border border-white/20 hover:border-white/40 hover:shadow-[0_0_40px_rgba(255,255,255,0.1)]"
                 >
                   <Image
                     src={src}

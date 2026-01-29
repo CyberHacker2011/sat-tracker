@@ -67,10 +67,10 @@ export default function Home() {
         <div className="inline-block p-3 rounded-2xl bg-primary/5 text-primary">
           {reverse ? <Target size={32} /> : <Zap size={32} />}
         </div>
-        <h3 className="text-4xl md:text-6xl font-black text-primary tracking-tight leading-tight">
+        <h3 className="text-3xl sm:text-5xl md:text-6xl font-black text-primary tracking-tight leading-tight px-4 sm:px-0">
           {title}
         </h3>
-        <p className="text-xl text-secondary leading-relaxed font-semibold max-w-xl">
+        <p className="text-lg md:text-xl text-secondary leading-relaxed font-semibold max-w-xl px-4 sm:px-0">
           {desc}
         </p>
       </div>
@@ -98,7 +98,7 @@ export default function Home() {
                 S
               </span>
             </div>
-            <span className="text-2xl font-black tracking-tighter text-primary">
+            <span className="text-xl sm:text-2xl font-black tracking-tighter text-primary">
               SAT TRACKER
             </span>
           </div>
@@ -159,14 +159,14 @@ export default function Home() {
               {t("hero.badge")}
             </div>
 
-            <h1 className="text-7xl md:text-9xl font-black tracking-tighter leading-[0.85] text-primary transition-all">
+            <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.85] text-primary transition-all">
               GO MODE <br className="hidden md:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary animate-gradient bg-[length:200%_auto]">
                 ON YOUR SAT
               </span>
             </h1>
 
-            <p className="text-2xl md:text-3xl text-secondary font-bold max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-3xl text-secondary font-bold max-w-3xl mx-auto leading-relaxed px-4">
               Stop guessing, start{" "}
               <span className="text-primary italic underline underline-offset-8 decoration-4">
                 slaying
@@ -185,10 +185,10 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="relative mt-20 max-w-6xl mx-auto">
+          <div className="relative mt-20 max-w-6xl mx-auto px-4 sm:px-0">
             <div className="absolute -top-10 -right-10 w-40 h-40 bg-accent/20 blur-[60px] rounded-full animate-pulse" />
             <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-primary/10 blur-[80px] rounded-full animate-pulse delay-700" />
-            <div className="relative rounded-[3rem] overflow-hidden border-[12px] border-card shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] dark:shadow-primary/10 transition-all duration-1000 hover:scale-[1.02] bg-card">
+            <div className="relative rounded-2xl sm:rounded-[3rem] overflow-hidden border-4 sm:border-[12px] border-card shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] dark:shadow-primary/10 transition-all duration-1000 hover:scale-[1.02] bg-card">
               <img
                 src="/dashboard.png"
                 alt="Dashboard"
@@ -204,7 +204,7 @@ export default function Home() {
             <span className="text-sm font-black text-primary uppercase tracking-[0.5em]">
               The Suite
             </span>
-            <h2 className="text-5xl md:text-7xl font-black text-primary tracking-tighter">
+            <h2 className="text-4xl sm:text-5xl md:text-7xl font-black text-primary tracking-tighter px-4">
               Everything to win.
             </h2>
           </div>
@@ -240,10 +240,10 @@ export default function Home() {
         <section className="bg-primary/5 pt-32 pb-0 my-8 overflow-hidden">
           <div className="space-y-20">
             <div className="max-w-4xl mx-auto px-6 text-center space-y-8">
-              <h2 className="text-6xl md:text-8xl font-black text-primary tracking-tighter italic font-heading">
+              <h2 className="text-4xl sm:text-6xl md:text-8xl font-black text-primary tracking-tighter italic font-heading">
                 THE WORKSPACE.
               </h2>
-              <p className="text-2xl md:text-3xl text-secondary font-bold leading-relaxed">
+              <p className="text-xl md:text-3xl text-secondary font-bold leading-relaxed px-4">
                 No context switching. Everything you need is right here in{" "}
                 <span className="text-primary italic">
                   one unified workspace
@@ -260,25 +260,20 @@ export default function Home() {
               <div className="flex animate-marquee py-12 w-max hover:[animation-play-state:paused]">
                 {[...Array(2)].map((_, listIdx) => (
                   <div key={listIdx} className="flex gap-8 px-4">
-                    {[
-                      "Screenshot 2026-01-28 203204.png",
-                      "Screenshot 2026-01-28 203210.png",
-                      "Screenshot 2026-01-28 203156.png",
-                      "Screenshot 2026-01-28 202951.png",
-                      "Screenshot 2026-01-28 203300.png",
-                      "Screenshot 2026-01-28 203328.png",
-                    ].map((img, i) => (
-                      <div
-                        key={i}
-                        className="w-[600px] h-[346px] bg-card rounded-[1rem] border border-border overflow-hidden grayscale hover:grayscale-0 transition-all duration-500 hover:scale-105 shadow-xl flex-shrink-0"
-                      >
-                        <img
-                          src={`/${img}`}
-                          className="w-full h-full object-cover"
-                          alt="Social proof"
-                        />
-                      </div>
-                    ))}
+                    {["1.png", "2.png", "3.png", "4.png", "5.png", "6.png"].map(
+                      (img, i) => (
+                        <div
+                          key={i}
+                          className="w-[280px] h-[160px] sm:w-[600px] sm:h-[346px] bg-card rounded-[1rem] border border-border overflow-hidden grayscale hover:grayscale-0 transition-all duration-500 hover:scale-105 shadow-xl flex-shrink-0"
+                        >
+                          <img
+                            src={`/${img}`}
+                            className="w-full h-full object-cover"
+                            alt="Social proof"
+                          />
+                        </div>
+                      ),
+                    )}
                   </div>
                 ))}
               </div>
@@ -311,17 +306,17 @@ export default function Home() {
             ].map((card) => (
               <div
                 key={card.id}
-                className="group p-12 bg-card rounded-[3rem] border border-border space-y-6 hover:shadow-2xl transition-all duration-500 hover:-translate-y-4"
+                className="group p-8 sm:p-12 bg-card rounded-2xl sm:rounded-[3rem] border border-border space-y-6 hover:shadow-2xl transition-all duration-500 hover:-translate-y-4"
               >
                 <div
                   className={`w-16 h-16 bg-${card.color}/10 text-primary rounded-2xl flex items-center justify-center font-black text-2xl group-hover:rotate-12 transition-transform`}
                 >
                   {card.id}
                 </div>
-                <h4 className="text-3xl font-black text-primary tracking-tight">
+                <h4 className="text-2xl sm:text-3xl font-black text-primary tracking-tight">
                   {card.title}
                 </h4>
-                <p className="text-xl text-secondary/80 font-semibold leading-relaxed">
+                <p className="text-lg sm:text-xl text-secondary/80 font-semibold leading-relaxed">
                   {card.desc}
                 </p>
               </div>
@@ -331,15 +326,15 @@ export default function Home() {
 
         {/* Major CTA Section */}
         <section className="max-w-7xl mx-auto px-6 py-20">
-          <div className="relative overflow-hidden bg-primary rounded-[4rem] p-20 text-center space-y-12">
+          <div className="relative overflow-hidden bg-primary rounded-3xl sm:rounded-[4rem] p-8 sm:p-20 text-center space-y-12">
             <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary-dark to-primary opacity-50" />
             <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20" />
 
             <div className="relative z-10 space-y-8">
-              <h2 className="text-6xl md:text-9xl font-black text-white tracking-tighter leading-none">
+              <h2 className="text-5xl sm:text-7xl md:text-9xl font-black text-white tracking-tighter leading-none">
                 READY TO <br /> ASCEND?
               </h2>
-              <p className="text-2xl text-white/80 font-bold">
+              <p className="text-xl sm:text-2xl text-white/80 font-bold">
                 Secure your 1600 future right now.
               </p>
 
@@ -347,7 +342,7 @@ export default function Home() {
                 href={
                   isAuthenticated ? `${appUrl}/dashboard` : `${appUrl}/login`
                 }
-                className="inline-block px-16 py-8 bg-white text-primary font-black text-2xl rounded-[2.5rem] shadow-3xl hover:scale-110 active:scale-95 transition-all"
+                className="inline-block px-8 py-6 sm:px-16 sm:py-8 bg-white text-primary font-black text-xl sm:text-2xl rounded-2xl sm:rounded-[2.5rem] shadow-3xl hover:scale-110 active:scale-95 transition-all"
               >
                 {t("cta.start")}
               </Link>
